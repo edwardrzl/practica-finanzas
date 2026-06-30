@@ -1,16 +1,21 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
-
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Header from './components/Header'
+import Home from './pages/Home'
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <h1>Hola</h1>
-    </>
+    <div className="App">
+
+      <Header />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {/*<Route path="/vehiculo/:placa" element={<VehiculoDetalle />} />
+          {/* Cualquier ruta no definida redirige al inicio */}
+          <Route path="*" element={<Navigate to="/" replace />} /> 
+          
+        </Routes>
+      
+    </div>
   )
 }
 
