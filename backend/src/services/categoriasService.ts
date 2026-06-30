@@ -1,8 +1,10 @@
-import * as repo from "../data/padresRepository.js";
-import { Categoria } from "../types/types.js";
+import * as repo from "../data/padresRepository";
+import { Categoria } from "../types/types";
 
 export async function obtenerCategorias(): Promise<Categoria[]> {
-  return repo.obtenerCategorias();
+  let categorias = await repo.obtenerCategorias()
+  //if(categorias.length==0) {categorias = []}
+  return categorias;
 }
 
 

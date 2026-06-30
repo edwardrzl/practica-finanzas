@@ -1,6 +1,6 @@
-import * as repo from "../data/movimientosRepository.js"
-import {crear} from "../data/movimientosRepository.js"
-import {obtenerCategoria, obtenerBolsillo, obtenerCuenta} from "../data/padresRepository.js"
+import * as repo from "../data/movimientosRepository"
+import {crear} from "../data/movimientosRepository"
+import {obtenerCategoria, obtenerBolsillo, obtenerCuenta} from "../data/padresRepository"
 
 export async function crearMovimiento(
     valor: number,

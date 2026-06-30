@@ -1,5 +1,5 @@
-import db from './database.js'
-import { Movimiento } from '../types/types.js'
+import db from './database'
+import { Movimiento } from '../types/types'
 
 export async function obtenerTodos(): Promise<Movimiento[]>{
     const movimientos = db.prepare('SELECT * FROM movimientos').all() as Movimiento[]
