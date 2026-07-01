@@ -9,9 +9,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/categorias", categoriasRoutes);
-//app.use("/api/vehiculo", vehiculoRoutes);
-
-//app.use("/api/pagar", pagosRoutes);
 
 
 

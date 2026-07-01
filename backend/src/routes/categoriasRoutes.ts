@@ -4,6 +4,7 @@ import * as controller from "../controllers/categoriasController";
 const router = Router();
 
 router.get("/", controller.getCategorias);
-//router.get("/:placa", controller.getVehiculo);
+router.post("/", controller.crearCategoria);
+router.put("/:id", controller.editarCategoria);
 
 export default router;

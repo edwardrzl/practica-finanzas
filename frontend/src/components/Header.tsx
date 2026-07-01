@@ -1,17 +1,18 @@
+import { useNavigate } from 'react-router-dom';
+
 export default function Header() {
+    const navigate = useNavigate();
     
     return (
-        <div style={{ backgroundColor: '#282c34', padding: '20px', color: 'white', textAlign: 'center' }}>
-            <h1>Finanzas</h1>
-            
-            <form>
-                <label>Usuario:</label>
-                <input type="text" placeholder="Ingrese su usuario" />
-                <label>Contraseña:</label>
-                <input type="password" placeholder="Ingrese su contraseña" />
-                <button type="submit">Iniciar Sesión</button>
-            </form>
-        </div>
+        <div style={{ backgroundColor: '#282c34', padding: '20px', color: 'white' }}>
+            <h2>Julio 2026</h2>
+  
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+                <button onClick={() => navigate('/')}>Home</button>
+                <button>Historial</button>
+                <button onClick={() => navigate('/configuracion')}>Configuración</button>
+            </div>
+        </div>  
     )
 }
 

@@ -1,6 +1,10 @@
 import * as repo from "../data/movimientosRepository"
-import {crear} from "../data/movimientosRepository"
-import {obtenerCategoria, obtenerBolsillo, obtenerCuenta} from "../data/padresRepository"
+
+import {obtenerCategoria} from "../data/categoriasRepository"
+import {obtenerBolsillo} from "../data/bolsillosRepository"
+import {obtenerCuenta} from "../data/cuentasRepository"
+
+//import {obtenerCategoria, obtenerBolsillo, obtenerCuenta} from "../data/padresRepository"
 
 export async function crearMovimiento(
     valor: number,
@@ -33,7 +37,7 @@ export async function crearMovimiento(
         cuenta.valor -= valor
     }
 
-    const id = crear(
+    const id = repo.crear(
         valor,
         categoria.nombre,
         bolsillo.nombre,

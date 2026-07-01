@@ -1,12 +1,38 @@
-import * as repo from "../data/padresRepository";
+import * as repo from "../data/categoriasRepository";
 import { Categoria } from "../types/types";
 
 export async function obtenerCategorias(): Promise<Categoria[]> {
   let categorias = await repo.obtenerCategorias()
-  //if(categorias.length==0) {categorias = []}
   return categorias;
 }
 
+export async function editarCategoria(id: number, nombre: string, limite: number): Promise<Categoria> {
+    if (!nombre || nombre.trim() === '') {
+        throw new Error('El nombre de la categoría no puede estar vacío')
+    }
+    if (limite < 0) {
+        throw new Error('El límite no puede ser negativo')
+    }
+
+    const categoria = await repo.editarCategoria(id, nombre, limite)
+    return categoria
+}
+
+export async function crearCategoria(nombre: string, limite: number, gastado: number, sobrante:number): Promise<Categoria> {
+    if (!nombre || nombre.trim() === '') {
+        throw new Error('El nombre de la categoría no puede estar vacío')
+    }
+    if (limite < 0) {
+        throw new Error('El límite no puede ser negativo')
+    }
+    if (limite < gastado) {
+        throw new Error('El gastado no puede ser mayor a el límite')
+    }
+
+
+    const categoria = await repo.crearCategoria(nombre, limite, gastado, sobrante)
+    return categoria
+}
 
 /*export async function obtenerVehiculoYVigencia(placa: string): Promise<VehiculoConVigencias> {
 const vehiculo = await repo.obtenerPorPlaca(placa);
