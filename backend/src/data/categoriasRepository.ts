@@ -46,3 +46,11 @@ export async function crearCategoria(nombre: string, limite: number, gastado: nu
 
     return categoriaNueva;  
 }
+
+export async function borrarCategoria(id: number): Promise<boolean> {
+    const resultado = db.prepare(`
+        DELETE FROM categorias WHERE id = ?
+    `).run(id)
+
+    return resultado.changes > 0
+}

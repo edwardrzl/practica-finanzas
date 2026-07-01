@@ -1,6 +1,5 @@
 import { type Categoria} from '../types/types'
 
-
 async function obtenerCategorias(): Promise<Categoria[]> {
 
   const response = await fetch(`http://localhost:3000/api/categorias`)
@@ -49,4 +48,14 @@ async function crearCategoria(params: {nombre: string, limite: number, gastado: 
   return categoria
 }
 
-export { obtenerCategorias, actualizarCategoria, crearCategoria }
+async function borrarCategoria(id: number): Promise<void> {
+  const res = await fetch(`http://localhost:3000/api/categorias/${id}`, {
+    method: 'DELETE'
+  })
+
+  if (!res.ok) {
+    throw new Error('Error al borrar la categoria')
+  }
+}
+
+export { obtenerCategorias, actualizarCategoria, crearCategoria, borrarCategoria }

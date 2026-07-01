@@ -1,59 +1,80 @@
-import { useState } from 'react'
-import { type Categoria } from '../../types/types'
-import { actualizarCategoria, crearCategoria } from '../../api/client'
-import CategoriaFormModal from './CategoriaFormModal'
-import CategoriaCrearForm from './CategoriaCrearForm'
+import { useState, useEffect } from 'react'
+import { type Cuenta } from '../../types/types'
+import { obtenerCuentas, actualizarCuenta, crearCuenta, borrarCuenta } from '../../api/cuentasClient'
+import CuentaEditarForm from './CuentaEditarForm'
+import CuentaCrearForm from './CuentaCrearForm'
 
-interface CategoriasProps {
-    categorias: Categoria[];
-    actualizar: React.Dispatch<React.SetStateAction<Categoria[]>>
-}
 
-export default function Categorias({ categorias, actualizar }: CategoriasProps) {
-    const [categoriaEditando, setCategoriaEditando] = useState<Categoria | null>(null)
-    const [categoriaCreando, setCategoriaCreando] = useState(false)
+export default function Cuentas() {
+    const [cuentaEditando, setCuentaEditando] = useState<Cuenta | null>(null)
+    const [cuentaCreando, setCuentaCreando] = useState(false)
+    const [cuentaConfirmacionBorrar, setCuentaConfirmacionBorrar] = useState<Cuenta | null>(null)
 
-    async function handleGuardar(datosFormulario: Categoria) {
-        const categoriaActualizada = await actualizarCategoria(datosFormulario) 
-        actualizar(prev => 
-            prev.map(c => c.id === categoriaActualizada.id ? categoriaActualizada : c)
+    const [cuentas, setCuentas] = useState<Cuenta[]>([])
+
+    useEffect(() => {      
+        const fetchCuentas = async () => {
+            const cuentas = await obtenerCuentas()
+            setCuentas(cuentas)
+            }
+        fetchCuentas()
+    }, []) 
+    
+    async function handleEditar(datosFormulario: Cuenta) {
+        const cuentaActualizada = await actualizarCuenta(datosFormulario) 
+        setCuentas(prev => 
+            prev.map(c => c.id === cuentaActualizada.id ? cuentaActualizada : c)
         )
-        setCategoriaEditando(null) 
+        setCuentaEditando(null) 
     }
     
-    async function handleCrear(nombre: string, limite: number, gastado: number, sobrante: number) {
-        const categoriaCreada = await crearCategoria({nombre, limite, gastado, sobrante }) 
-        actualizar(prev => [...prev, categoriaCreada])
-        setCategoriaCreando(false) 
+    async function handleCrear(nombre: string, valor: number) {
+        const cuentaCreada = await crearCuenta({nombre, valor }) 
+        setCuentas(prev => [...prev, cuentaCreada])
+        setCuentaCreando(false) 
+    }
+    
+    async function handleBorrar(id: number) {
+        await borrarCuenta(id) 
+        setCuentas(prev => prev.filter(c => c.id !== id))
+        setCuentaConfirmacionBorrar(null) 
     }
 
     return (
         <div>
-            <h2>Categorias de Saldo Disponible</h2>
+            <h2>Cuentas</h2>
             <ul>
-                {categorias.map((c) => (
+                {cuentas.map((c) => (
                     <li key={c.id}>
-                        {c.nombre} {c.limite}/{c.gastado}. Sobrante={c.sobrante}
-                        <button onClick={() => setCategoriaEditando(c)}>Editar</button>
-                        <button>Eliminar</button>
+                        {c.nombre}. Valor: {c.valor}
+                        <button onClick={() => setCuentaEditando(c)}>Editar</button>
+                        <button onClick={() => setCuentaConfirmacionBorrar(c)}>Eliminar</button>
                     </li>
                 ))}
             </ul>
-            <button onClick={() => setCategoriaCreando(true)}>Crear Categoria</button>
+            <button onClick={() => setCuentaCreando(true)}>Crear Cuenta</button>
 
-            {categoriaEditando && (
-                <CategoriaFormModal
-                    categoria={categoriaEditando}
-                    onGuardar={handleGuardar}
-                    onCerrar={() => setCategoriaEditando(null)}
+            {cuentaEditando && (
+                <CuentaEditarForm
+                    cuenta={cuentaEditando}
+                    onGuardar={handleEditar}
+                    onCerrar={() => setCuentaEditando(null)}
                 />
             )}
 
-            {categoriaCreando && (
-                <CategoriaCrearForm
+            {cuentaCreando && (
+                <CuentaCrearForm
                     onCrear={handleCrear}
-                    onCerrar={() => setCategoriaCreando(false)}
+                    onCerrar={() => setCuentaCreando(false)}
                 />
+            )}
+
+            {cuentaConfirmacionBorrar && (
+                <>               
+                <p>¿Seguro que quieres borrar la cuenta {cuentaConfirmacionBorrar.nombre}?</p>
+                <button onClick={() => handleBorrar(cuentaConfirmacionBorrar.id)}>Borrar</button>
+                <button onClick={() => setCuentaConfirmacionBorrar(null)}>Cancelar</button>
+                </>
             )}
 
         </div>

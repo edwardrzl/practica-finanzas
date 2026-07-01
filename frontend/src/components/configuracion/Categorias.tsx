@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { type Categoria } from '../../types/types'
-import { obtenerCategorias, actualizarCategoria, crearCategoria } from '../../api/client'
+import { obtenerCategorias, actualizarCategoria, crearCategoria, borrarCategoria } from '../../api/categoriasClient'
 import CategoriaFormModal from './CategoriaFormModal'
 import CategoriaCrearForm from './CategoriaCrearForm'
 
@@ -19,6 +19,7 @@ export default function Categorias() {
 
     const [categoriaEditando, setCategoriaEditando] = useState<Categoria | null>(null)
     const [categoriaCreando, setCategoriaCreando] = useState(false)
+    const [categoriaConfirmacionBorrar,setCategoriaConfirmacionBorrar] = useState<Categoria | null>(null)
 
     async function handleGuardar(datosFormulario: Categoria) {
         const categoriaActualizada = await actualizarCategoria(datosFormulario) 
@@ -34,6 +35,12 @@ export default function Categorias() {
         setCategoriaCreando(false) 
     }
 
+    async function handleBorrar(id: number) {
+        await borrarCategoria(id) 
+        setCategorias(prev => prev.filter(c => c.id !== id))
+        setCategoriaConfirmacionBorrar(null)
+    }
+
     return (
         <div>
             <h2>Categorias de Saldo Disponible</h2>
@@ -43,7 +50,7 @@ export default function Categorias() {
                     <li key={c.id}>
                         {c.nombre} {c.limite}/{c.gastado}. Sobrante={c.sobrante}
                         <button onClick={() => setCategoriaEditando(c)}>Editar</button>
-                        <button>Eliminar</button>
+                        <button onClick={() => setCategoriaConfirmacionBorrar(c)}>Eliminar</button>
                     </li>
                 ))}
             </ul>
@@ -64,6 +71,14 @@ export default function Categorias() {
                 />
             )}
 
+            {categoriaConfirmacionBorrar && (
+                <>               
+                <p>¿Seguro que quieres borrar la categoria {categoriaConfirmacionBorrar.nombre}?</p>
+                <button onClick={() => handleBorrar(categoriaConfirmacionBorrar.id)}>Borrar</button>
+                <button onClick={() => setCategoriaConfirmacionBorrar(null)}>Cancelar</button>
+                </>
+            )}
         </div>
     )
+    
 }

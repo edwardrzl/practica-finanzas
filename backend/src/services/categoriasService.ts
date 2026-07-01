@@ -34,6 +34,13 @@ export async function crearCategoria(nombre: string, limite: number, gastado: nu
     return categoria
 }
 
+export async function borrarCategoria(id: number): Promise<void> {
+    const seBorro = await repo.borrarCategoria(id)
+
+    if (!seBorro) {
+        throw new Error('La categoria que intentas borrar no existe')
+    }
+}
 /*export async function obtenerVehiculoYVigencia(placa: string): Promise<VehiculoConVigencias> {
 const vehiculo = await repo.obtenerPorPlaca(placa);
 if (!vehiculo) {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { obtenerCategorias } from '../api/client';
+import { obtenerCategorias } from '../api/categoriasClient';
 import type { Categoria } from '../types/types';
 import Categorias from '../components/home/Categorias'
 

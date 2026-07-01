@@ -42,3 +42,13 @@ export async function crearCategoria(req: Request, res: Response): Promise<void>
     res.json(categoria);
 }
 
+export async function borrarCategoria(req: Request<{ id: string }>, res: Response): Promise<void> {
+    const id = Number(req.params.id)
+
+    try {
+        await service.borrarCategoria(id)
+        res.status(204).send()
+    } catch (error) {
+        res.status(404).json({ error: (error as Error).message })
+    }
+}
