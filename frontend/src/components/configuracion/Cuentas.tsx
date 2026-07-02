@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { type Cuenta } from '../../types/types'
-import { obtenerCuentas, actualizarCuenta, crearCuenta, borrarCuenta } from '../../api/cuentasClient'
+import {  actualizarCuenta, crearCuenta, borrarCuenta } from '../../api/cuentasClient'
 import CuentaEditarForm from './CuentaEditarForm'
 import CuentaCrearForm from './CuentaCrearForm'
+import { useCuentas } from '../../context/CuentasContext'
 
 
 export default function Cuentas() {
@@ -10,17 +11,11 @@ export default function Cuentas() {
     const [cuentaCreando, setCuentaCreando] = useState(false)
     const [cuentaConfirmacionBorrar, setCuentaConfirmacionBorrar] = useState<Cuenta | null>(null)
 
-    const [cuentas, setCuentas] = useState<Cuenta[]>([])
+    const { cuentas, setCuentas } = useCuentas()
     const patrimonio = cuentas.reduce((total, cuenta) => 
     total + (cuenta.tipo === "normal" ? cuenta.valor : -cuenta.valor), 0);
 
-    useEffect(() => {      
-        const fetchCuentas = async () => {
-            const cuentas = await obtenerCuentas()
-            setCuentas(cuentas)
-            }
-        fetchCuentas()
-    }, []) 
+
     
     async function handleEditar(datosFormulario: Cuenta) {
         const cuentaActualizada = await actualizarCuenta(datosFormulario) 

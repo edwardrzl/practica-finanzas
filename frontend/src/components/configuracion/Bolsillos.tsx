@@ -1,25 +1,20 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { type Bolsillo } from '../../types/types'
-import { obtenerBolsillos, actualizarBolsillo, crearBolsillo, borrarBolsillo } from '../../api/bolsillosClient'
+import {  actualizarBolsillo, crearBolsillo, borrarBolsillo } from '../../api/bolsillosClient'
 import BolsilloEditarForm from './BolsilloEditarForm'
 import BolsilloCrearForm from './BolsilloCrearForm'
-
+import { useBolsillos } from '../../context/BolsillosContext'
 
 export default function Bolsillos() {
     const [bolsilloEditando, setBolsilloEditando] = useState<Bolsillo | null>(null)
     const [bolsilloCreando, setBolsilloCreando] = useState(false)
     const [bolsilloConfirmacionBorrar, setBolsilloConfirmacionBorrar] = useState<Bolsillo | null>(null)
 
-    const [bolsillos, setBolsillos] = useState<Bolsillo[]>([])
+    const { bolsillos, setBolsillos } = useBolsillos()
     const totalBolsillos = bolsillos.reduce((total, bolsillo) => 
     total + (bolsillo.valor), 0);
 
-    useEffect(() => {      
-        const fetchBolsillos = async () => {
-            const bolsillos = await obtenerBolsillos()
-            setBolsillos(bolsillos)}
-            fetchBolsillos()
-    }, []) 
+
     
     async function handleEditar(datosFormulario: Bolsillo) {
         const bolsilloActualizada = await actualizarBolsillo(datosFormulario) 

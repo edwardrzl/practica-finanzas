@@ -1,21 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { type Categoria } from '../../types/types'
-import { obtenerCategorias, actualizarCategoria, crearCategoria, borrarCategoria } from '../../api/categoriasClient'
+import { useCategorias } from '../../context/CategoriasContext'
+import { actualizarCategoria, crearCategoria, borrarCategoria } from '../../api/categoriasClient'
 import CategoriaFormModal from './CategoriaEditarForm'
 import CategoriaCrearForm from './CategoriaCrearForm'
 
 
 export default function Categorias() {
 
-    const [categorias, setCategorias] = useState<Categoria[]>([])
-
-    useEffect(() => {      
-        const fetchCategorias = async () => {
-            const categorias = await obtenerCategorias()
-            setCategorias(categorias)
-            }
-        fetchCategorias()
-    }, []) 
+    const { categorias, setCategorias } = useCategorias()
 
     const [categoriaEditando, setCategoriaEditando] = useState<Categoria | null>(null)
     const [categoriaCreando, setCategoriaCreando] = useState(false)

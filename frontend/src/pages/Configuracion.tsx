@@ -18,8 +18,8 @@ export default function Configuracion() {
         <div>
 
             <Cuentas />
-            <Categorias />
             <Bolsillos />
+            <Categorias />
             {/*<Fondos />*/}
             
         </div>
