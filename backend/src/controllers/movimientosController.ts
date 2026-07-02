@@ -31,8 +31,8 @@ export async function crearMovimiento(req: Request, res: Response): Promise<void
 
     const { valor, descripcion, tipo, idCategoria, idCuenta, idBolsillo } = req.body as MovimientoNuevo;
     console.log("controller")
-    const movimiento = await service.crearMovimiento(valor, descripcion, tipo, idCategoria, idCuenta, idBolsillo);
-    res.json(movimiento);
+    const datosMovimientoyCategoria = await service.crearMovimiento(valor, descripcion, tipo, idCategoria, idCuenta, idBolsillo);
+    res.json(datosMovimientoyCategoria);
 }
 
 /*export async function borrarMovimiento(req: Request<{ id: string }>, res: Response): Promise<void> {

@@ -3,7 +3,7 @@ import * as repo from "../data/movimientosRepository"
 import {obtenerCategoria} from "../data/categoriasRepository"
 import {obtenerBolsillo} from "../data/bolsillosRepository"
 import {obtenerCuenta} from "../data/cuentasRepository"
-import { Movimiento } from "../types/types"
+import { Movimiento, Categoria } from "../types/types"
 
 //import {obtenerCategoria, obtenerBolsillo, obtenerCuenta} from "../data/padresRepository"
 
@@ -14,7 +14,7 @@ export async function crearMovimiento(
     idCategoria: number,
     idCuenta: number,
     idBolsillo: number,
-): Promise<Movimiento>{
+): Promise<{"movimiento": Movimiento, "categoria": Categoria}>{
     const categoria =  await obtenerCategoria(idCategoria)
     const bolsillo = await obtenerBolsillo(idBolsillo)
     const cuenta = await obtenerCuenta(idCuenta)
@@ -49,6 +49,7 @@ export async function crearMovimiento(
         idCuenta,
         cuenta.valor
     )
+    const categoriaActualizada =  await obtenerCategoria(idCategoria)
 
-    return movimiento
+    return {"movimiento": await movimiento, "categoria": categoriaActualizada}
 }

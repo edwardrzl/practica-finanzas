@@ -6,13 +6,14 @@ import {crearMovimiento} from '../../api/movimientosClient'
 import { type MovimientoNuevo} from '../../types/types'
 
 
+
 export default function BotonAgregarMovimiento() {
 
     const [formMovimiento, setFormMovimiento] = useState(false)
     const [descripcion, setDescripcion] = useState<string>("")
     const [valor, setValor] = useState<number>(0)
     const [tipo, setTipo] = useState<"ingreso"| "gasto">("gasto")
-    const { categorias } = useCategorias()
+    const { categorias, setCategorias } = useCategorias()
     const { bolsillos } = useBolsillos()
     const { cuentas } = useCuentas()
     const [idCategoria, setIdCategoria] = useState<number | "">("")
@@ -24,10 +25,11 @@ export default function BotonAgregarMovimiento() {
 
     async function handleCrear(movimientoNuevo: MovimientoNuevo) {
 
-        console.log(movimientoNuevo)
-        const movimientoNuevoo = await crearMovimiento(movimientoNuevo) 
-        console.log(movimientoNuevoo)
-            //setMovimientos(prev => [...prev, cuentaCreada])
+        const {movimiento, categoria} = await crearMovimiento(movimientoNuevo) 
+        //el movimiento no le tengo uso aun, no sé si tenga en un futuro
+        setCategorias(prev => 
+        prev.map(c => c.id === categoria.id ? categoria : c)
+    )
             setFormMovimiento(false) 
     }
 

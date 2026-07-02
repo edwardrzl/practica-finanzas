@@ -1,4 +1,4 @@
-import { type Movimiento, type MovimientoNuevo} from '../types/types'
+import { type Categoria, type Movimiento, type MovimientoNuevo} from '../types/types'
 
 async function obtenerMovimientos(): Promise<Movimiento[]> {
 
@@ -29,8 +29,8 @@ async function obtenerMovimientos(): Promise<Movimiento[]> {
   return movimientoActualizada
 }*/
 
-async function crearMovimiento(nuevoMovimiento: MovimientoNuevo): Promise<Movimiento> {
-  console.log("api")
+async function crearMovimiento(nuevoMovimiento: MovimientoNuevo): Promise<{"movimiento": Movimiento, "categoria": Categoria}> {
+  
   const res = await fetch(`http://localhost:3000/api/movimientos`, {
     method: 'POST',
     headers: {
@@ -45,10 +45,10 @@ async function crearMovimiento(nuevoMovimiento: MovimientoNuevo): Promise<Movimi
         idBolsillo: nuevoMovimiento.idBolsillo,
      })
   }) 
-  console.log("api2")
-  const movimiento = await res.json()
 
-  return movimiento
+  const datos = await res.json()
+  
+  return datos
 }
 
 /*async function borrarMovimiento(id: number): Promise<void> {
