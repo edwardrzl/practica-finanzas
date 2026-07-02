@@ -1,16 +1,17 @@
 import { useState } from 'react'
 
 interface CuentaCrearFormProps {
-    onCrear: (nombre: string, valor: number) => void;
+    onCrear: (nombre: string, valor: number, tipo: "normal" | "deuda") => void;
     onCerrar: () => void;
 }
 
 export default function CuentaCrearForm({ onCrear, onCerrar }: CuentaCrearFormProps) {
     const [nombre, setNombre] = useState("")
     const [valor, setValor] = useState(0)
+    const [tipo, setTipo] = useState<"normal"| "deuda">("normal")
 
     function handleSubmit() {
-        onCrear(nombre, valor)
+        onCrear(nombre, valor, tipo)
     }
 
     return (
@@ -29,8 +30,18 @@ export default function CuentaCrearForm({ onCrear, onCerrar }: CuentaCrearFormPr
                 onChange={e => setValor(Number(e.target.value))}
             />
 
+            <label htmlFor="tipo">Tipo:</label>
+            <select 
+                id="tipo" 
+                value={tipo} 
+                onChange={e => setTipo(e.target.value as "normal" | "deuda")}
+            >
+                <option value="normal">Normal</option>
+                <option value="deuda">Deuda</option>
+            </select>
+
             <button onClick={handleSubmit}>
-                Guardar cambios
+                Crear cuenta
             </button>
         </div>
     )

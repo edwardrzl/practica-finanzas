@@ -11,12 +11,12 @@ export async function obtenerCuentas(): Promise<Cuenta[]>{
     return cuentas
 }
 
-export async function editarCuenta(id: number, nombre: string, valor: number): Promise<Cuenta> {
+export async function editarCuenta(id: number, nombre: string, valor: number, tipo: "normal" | "deuda"): Promise<Cuenta> {
     db.prepare(`
         UPDATE cuentas 
-        SET nombre = ?, limite = ? 
+        SET nombre = ?, valor = ?, tipo = ? 
         WHERE id = ?
-    `).run(nombre, valor, id)
+    `).run(nombre, valor, tipo, id)
 
     const cuentaActualizada = db.prepare(`
         SELECT * FROM categorias WHERE id = ?
@@ -25,15 +25,15 @@ export async function editarCuenta(id: number, nombre: string, valor: number): P
     return cuentaActualizada
 }
 
-export async function crearCuenta(nombre: string, valor: number): Promise<Cuenta> {
+export async function crearCuenta(nombre: string, valor: number, tipo: "normal" | "deuda"): Promise<Cuenta> {
     
     const transaccion = db.transaction(() => {
       const resultCrear = db
         .prepare(
-          `INSERT INTO cuentas (nombre, valor)
-           VALUES (?, ?)`
+          `INSERT INTO cuentas (nombre, valor, tipo)
+           VALUES (?, ?, ?)`
         )
-        .run(nombre, valor);
+        .run(nombre, valor, tipo);
 
       return Number(resultCrear.lastInsertRowid);
     })

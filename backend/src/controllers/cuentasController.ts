@@ -9,6 +9,7 @@ export async function getCuentas(req: Request, res: Response): Promise<void> {
 interface EditarCuentaBody {
     nombre: string;
     valor: number;
+    tipo: "normal" | "deuda";
 }
 
 export async function editarCuenta(
@@ -16,10 +17,10 @@ export async function editarCuenta(
     res: Response
 ): Promise<void> {
     const id = Number(req.params.id)
-    const { nombre, valor } = req.body
+    const { nombre, valor, tipo } = req.body
 
     try {
-        const cuenta = await service.editarCuenta(id, nombre, valor)
+        const cuenta = await service.editarCuenta(id, nombre, valor, tipo)
         res.json(cuenta)
     } catch (error) {
         res.status(400).json({ error: (error as Error).message })
@@ -29,9 +30,9 @@ export async function editarCuenta(
 
 export async function crearCuenta(req: Request, res: Response): Promise<void> {
 
-    const { nombre, valor } = req.body as EditarCuentaBody;
+    const { nombre, valor, tipo } = req.body as EditarCuentaBody;
 
-    const cuenta = await service.crearCuenta(nombre, valor);
+    const cuenta = await service.crearCuenta(nombre, valor, tipo);
     res.json(cuenta);
 }
 

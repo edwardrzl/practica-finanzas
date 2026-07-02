@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { type Categoria } from '../../types/types'
 import { obtenerCategorias, actualizarCategoria, crearCategoria, borrarCategoria } from '../../api/categoriasClient'
-import CategoriaFormModal from './CategoriaFormModal'
+import CategoriaFormModal from './CategoriaEditarForm'
 import CategoriaCrearForm from './CategoriaCrearForm'
 
 

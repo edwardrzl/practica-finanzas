@@ -18,6 +18,7 @@ async function actualizarCuenta(cuenta: Cuenta): Promise<Cuenta> {
     body: JSON.stringify({
       nombre: cuenta.nombre,
       valor: cuenta.valor,
+      tipo: cuenta.tipo
     })
   })
 
@@ -29,7 +30,7 @@ async function actualizarCuenta(cuenta: Cuenta): Promise<Cuenta> {
   return cuentaActualizada
 }
 
-async function crearCuenta(params: {nombre: string, valor: number}): Promise<Cuenta> {
+async function crearCuenta(params: {nombre: string, valor: number, tipo: "normal" | "deuda"}): Promise<Cuenta> {
 
   const res = await fetch(`http://localhost:3000/api/cuentas`, {
     method: 'POST',
@@ -38,7 +39,8 @@ async function crearCuenta(params: {nombre: string, valor: number}): Promise<Cue
     },
     body: JSON.stringify({ 
       nombre: params.nombre,
-      valor: params.valor
+      valor: params.valor,
+      tipo: params.tipo
      })
   }) 
   const cuenta = await res.json()

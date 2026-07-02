@@ -6,7 +6,7 @@ export async function obtenerCuentas(): Promise<Cuenta[]> {
   return cuentas;
 }
 
-export async function editarCuenta(id: number, nombre: string, valor: number): Promise<Cuenta> {
+export async function editarCuenta(id: number, nombre: string, valor: number, tipo: "normal" | "deuda"): Promise<Cuenta> {
     if (!nombre || nombre.trim() === '') {
         throw new Error('El nombre de la cuenta no puede estar vacío')
     }
@@ -14,11 +14,11 @@ export async function editarCuenta(id: number, nombre: string, valor: number): P
         throw new Error('El límite no puede ser negativo')
     }
 
-    const cuenta = await repo.editarCuenta(id, nombre, valor)
+    const cuenta = await repo.editarCuenta(id, nombre, valor, tipo)
     return cuenta
 }
 
-export async function crearCuenta(nombre: string, valor: number): Promise<Cuenta> {
+export async function crearCuenta(nombre: string, valor: number, tipo: "normal" | "deuda"): Promise<Cuenta> {
     if (!nombre || nombre.trim() === '') {
         throw new Error('El nombre de la cuenta no puede estar vacío')
     }
@@ -27,7 +27,7 @@ export async function crearCuenta(nombre: string, valor: number): Promise<Cuenta
     }
 
 
-    const cuenta = await repo.crearCuenta(nombre, valor)
+    const cuenta = await repo.crearCuenta(nombre, valor, tipo)
     return cuenta
 }
 

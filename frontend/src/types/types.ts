@@ -23,4 +23,5 @@ export interface Cuenta {
     id: number
     nombre: string
     valor: number
+    tipo: "normal" | "deuda"
 }

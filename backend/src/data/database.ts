@@ -32,7 +32,8 @@ db.exec(`
     CREATE TABLE IF NOT EXISTS cuentas (
         id          INTEGER PRIMARY KEY AUTOINCREMENT,
         nombre      TEXT NOT NULL,
-        valor       INTEGER NOT NULL
+        valor       INTEGER NOT NULL,
+        tipo        TEXT    NOT NULL CHECK(tipo IN('normal', 'deuda'))
     );
 `)
 

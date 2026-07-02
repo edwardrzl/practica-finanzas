@@ -11,6 +11,8 @@ export default function Cuentas() {
     const [cuentaConfirmacionBorrar, setCuentaConfirmacionBorrar] = useState<Cuenta | null>(null)
 
     const [cuentas, setCuentas] = useState<Cuenta[]>([])
+    const patrimonio = cuentas.reduce((total, cuenta) => 
+    total + (cuenta.tipo === "normal" ? cuenta.valor : -cuenta.valor), 0);
 
     useEffect(() => {      
         const fetchCuentas = async () => {
@@ -28,8 +30,8 @@ export default function Cuentas() {
         setCuentaEditando(null) 
     }
     
-    async function handleCrear(nombre: string, valor: number) {
-        const cuentaCreada = await crearCuenta({nombre, valor }) 
+    async function handleCrear(nombre: string, valor: number, tipo: "normal" | "deuda") {
+        const cuentaCreada = await crearCuenta({nombre, valor, tipo }) 
         setCuentas(prev => [...prev, cuentaCreada])
         setCuentaCreando(false) 
     }
@@ -43,10 +45,11 @@ export default function Cuentas() {
     return (
         <div>
             <h2>Cuentas</h2>
+            <p>Patrimonio de: {patrimonio}</p>
             <ul>
                 {cuentas.map((c) => (
                     <li key={c.id}>
-                        {c.nombre}. Valor: {c.valor}
+                        {c.nombre}. Valor: {c.valor}. Tipo: {c.tipo}
                         <button onClick={() => setCuentaEditando(c)}>Editar</button>
                         <button onClick={() => setCuentaConfirmacionBorrar(c)}>Eliminar</button>
                     </li>

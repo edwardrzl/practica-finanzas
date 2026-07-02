@@ -55,7 +55,7 @@ export default function CategoriaCrearForm({ onCrear, onCerrar }: CategoriaCrear
             )}
 
             <button onClick={handleSubmit} disabled={limiteSinDefinir || seExcedio}>
-                Guardar cambios
+                Crear categoría
             </button>
         </div>
     )
