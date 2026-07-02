@@ -1,11 +1,15 @@
 export interface Movimiento {
     id: number
     valor: number
-    categoria: string
-    bolsillo: string
-    cuenta: string
+    descripcion: string
+    idCategoria: number
+    idBolsillo: number
+    idCuenta: number
+    fecha: string
     tipo: "gasto" | "ingreso"
 }
+
+export interface MovimientoNuevo extends Omit<Movimiento, 'id' | 'fecha'> {}
 
 export interface Categoria {
     id: number

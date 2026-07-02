@@ -3,19 +3,18 @@ import * as repo from "../data/movimientosRepository"
 import {obtenerCategoria} from "../data/categoriasRepository"
 import {obtenerBolsillo} from "../data/bolsillosRepository"
 import {obtenerCuenta} from "../data/cuentasRepository"
+import { Movimiento } from "../types/types"
 
 //import {obtenerCategoria, obtenerBolsillo, obtenerCuenta} from "../data/padresRepository"
 
 export async function crearMovimiento(
     valor: number,
-    //categoria: string,
-    //bolsillo: string,
-    //cuenta: string,
+    descripcion: string,
     tipo: "gasto" | "ingreso",
     idCategoria: number,
+    idCuenta: number,
     idBolsillo: number,
-    idCuenta: number
-){
+): Promise<Movimiento>{
     const categoria =  await obtenerCategoria(idCategoria)
     const bolsillo = await obtenerBolsillo(idBolsillo)
     const cuenta = await obtenerCuenta(idCuenta)
@@ -23,6 +22,7 @@ export async function crearMovimiento(
     if(tipo === "gasto"){
 
         //Actualizar datos categoria
+        console.log("entre en service")
         categoria.gastado = valor + categoria.gastado
         if(categoria.limite > categoria.gastado && categoria.sobrante!==0){
             categoria.sobrante = categoria.limite-categoria.gastado
@@ -37,11 +37,9 @@ export async function crearMovimiento(
         cuenta.valor -= valor
     }
 
-    const id = repo.crear(
+    const movimiento = repo.crear(
         valor,
-        categoria.nombre,
-        bolsillo.nombre,
-        cuenta.nombre,
+        descripcion,
         tipo,
         idCategoria,
         categoria.gastado,
@@ -51,4 +49,6 @@ export async function crearMovimiento(
         idCuenta,
         cuenta.valor
     )
+
+    return movimiento
 }

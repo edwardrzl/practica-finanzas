@@ -1,13 +1,10 @@
 import { useEffect } from 'react'
 import { type Categoria} from '../../types/types'
+import { useCategorias } from '../../context/CategoriasContext'
 
-interface CategoriasProps {
-    categorias: Categoria[];
-
-}
-
-export default function Categorias({ categorias }: CategoriasProps) {
+export default function Categorias() {
     
+    const { categorias, setCategorias } = useCategorias()
     useEffect(() => {
         
     }, [])

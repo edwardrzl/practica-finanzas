@@ -6,20 +6,15 @@ import BotonAgregarMovimiento from '../components/home/BotonAgregarMovimiento'
 
 export default function Home() {
 
-    const [categorias, setCategorias] = useState<Categoria[]>([])
 
    useEffect(() => {      
-        const fetchCategorias = async () => {
-            const categorias = await obtenerCategorias()
-            setCategorias(categorias)
-            }
-        fetchCategorias()
+        
     }, [])  
 
     return (
         <div>
             {/*<SaldoDisponible />*/}
-            <Categorias categorias={categorias} />
+            <Categorias  />
             <BotonAgregarMovimiento />
             
         </div>

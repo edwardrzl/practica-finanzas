@@ -6,13 +6,19 @@ db.pragma("journal_mode=WAL")
 db.pragma("foreign_keys=ON")
 
 db.exec(`
+
     CREATE TABLE IF NOT EXISTS movimientos (
-        id          INTEGER PRIMARY KEY AUTOINCREMENT,
-        valor       INTEGER NOT NULL,
-        categoria   TEXT    NOT NULL,
-        bolsillo    TEXT    DEFAULT 'SaldoDisponible',
-        cuenta      TEXT    NOT NULL,
-        tipo        TEXT    NOT NULL CHECK(tipo IN('gasto', 'ingreso'))
+        id              INTEGER PRIMARY KEY AUTOINCREMENT,
+        valor           INTEGER NOT NULL,
+        descripcion     TEXT    NOT NULL,
+        id_categoria    INTEGER NOT NULL,
+        id_bolsillo     INTEGER NOT NULL,
+        id_cuenta       INTEGER NOT NULL,
+        fecha           TEXT    NOT NULL DEFAULT (datetime('now')),
+        tipo            TEXT    NOT NULL CHECK(tipo IN('gasto', 'ingreso')),
+        FOREIGN KEY (id_categoria) REFERENCES categorias(id),
+        FOREIGN KEY (id_bolsillo)  REFERENCES bolsillos(id),
+        FOREIGN KEY (id_cuenta)    REFERENCES cuentas(id)
     );
     
     CREATE TABLE IF NOT EXISTS categorias (

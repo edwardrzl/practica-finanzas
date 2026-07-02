@@ -13,9 +13,7 @@ export async function obtenerPorTipo(tipo: string): Promise<Movimiento[]>{
 
 export async function crear(
     valor: number,
-    categoria: string,
-    bolsillo: string,
-    cuenta: string,
+    descripcion: string,
     tipo: "gasto" | "ingreso",
     idCategoria: number,
     gastado: number,
@@ -24,9 +22,9 @@ export async function crear(
     valorBolsillo: number,
     idCuenta: number,
     valorCuenta: number
-): Promise<number>{
+): Promise<Movimiento>{
     const transaccion = db.transaction(() => {
-        const resultMovimiento = db.prepare(`INSERT INTO movimientos (valor, categoria, bolsillo, cuenta, tipo) VALUES (?, ?, ?, ?, ?)`).run(valor, categoria, bolsillo, cuenta, tipo)
+        const resultMovimiento = db.prepare(`INSERT INTO movimientos (valor, descripcion, id_categoria, id_bolsillo, id_cuenta, tipo) VALUES (?, ?, ?, ?, ?, ?)`).run(valor, descripcion, idCategoria, idBolsillo, idCuenta, tipo)
 
         db.prepare(`UPDATE categorias SET gastado = ?, sobrante = ? WHERE id = ?`).run(gastado, sobrante, idCategoria)
 
@@ -36,5 +34,6 @@ export async function crear(
 
         return Number(resultMovimiento.lastInsertRowid)
     })   
-    return transaccion()
+    const id = transaccion()
+    return db.prepare(`SELECT * FROM movimientos WHERE id = ?`).get(id) as Movimiento
 }
