@@ -18,6 +18,7 @@ async function actualizarCategoria(categoria: Categoria): Promise<Categoria> {
     body: JSON.stringify({
       nombre: categoria.nombre,
       limite: categoria.limite,
+      sobrante: categoria.sobrante
     })
   })
 

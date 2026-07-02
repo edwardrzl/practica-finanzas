@@ -10,6 +10,7 @@ export async function getCategorias(req: Request, res: Response): Promise<void> 
 interface EditarCategoriaBody {
     nombre: string;
     limite: number;
+    sobrante: number;
 }
 
 export async function editarCategoria(
@@ -17,10 +18,10 @@ export async function editarCategoria(
     res: Response
 ): Promise<void> {
     const id = Number(req.params.id)
-    const { nombre, limite } = req.body
+    const { nombre, limite, sobrante } = req.body
 
     try {
-        const categoria = await service.editarCategoria(id, nombre, limite)
+        const categoria = await service.editarCategoria(id, nombre, limite, sobrante)
         res.json(categoria)
     } catch (error) {
         res.status(400).json({ error: (error as Error).message })

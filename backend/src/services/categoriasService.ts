@@ -6,7 +6,7 @@ export async function obtenerCategorias(): Promise<Categoria[]> {
   return categorias;
 }
 
-export async function editarCategoria(id: number, nombre: string, limite: number): Promise<Categoria> {
+export async function editarCategoria(id: number, nombre: string, limite: number, sobrante:number): Promise<Categoria> {
     if (!nombre || nombre.trim() === '') {
         throw new Error('El nombre de la categoría no puede estar vacío')
     }
@@ -14,7 +14,7 @@ export async function editarCategoria(id: number, nombre: string, limite: number
         throw new Error('El límite no puede ser negativo')
     }
 
-    const categoria = await repo.editarCategoria(id, nombre, limite)
+    const categoria = await repo.editarCategoria(id, nombre, limite, sobrante)
     return categoria
 }
 

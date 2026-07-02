@@ -23,7 +23,7 @@ async function actualizarCuenta(cuenta: Cuenta): Promise<Cuenta> {
   })
 
   if (!res.ok) {
-    throw new Error('Error al actualizar la categoría')
+    throw new Error('Error al actualizar la cuenta')
   }
 
   const cuentaActualizada = await res.json()

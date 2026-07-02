@@ -11,12 +11,12 @@ export async function obtenerCategorias(): Promise<Categoria[]>{
     return categorias
 }
 
-export async function editarCategoria(id: number, nombre: string, limite: number): Promise<Categoria> {
+export async function editarCategoria(id: number, nombre: string, limite: number, sobrante:number): Promise<Categoria> {
     db.prepare(`
         UPDATE categorias 
-        SET nombre = ?, limite = ? 
+        SET nombre = ?, limite = ?, sobrante = ?
         WHERE id = ?
-    `).run(nombre, limite, id)
+    `).run(nombre, limite, sobrante, id)
 
     const categoriaActualizada = db.prepare(`
         SELECT * FROM categorias WHERE id = ?

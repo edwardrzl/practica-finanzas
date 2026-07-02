@@ -10,7 +10,7 @@ interface CuentaEditarFormProps {
 export default function CuentaEditarForm({ cuenta, onGuardar, onCerrar }: CuentaEditarFormProps) {
     const [nombre, setNombre] = useState(cuenta.nombre)
     const [valor, setValor] = useState(cuenta.valor)
-    const [tipo, setTipo] = useState<"normal"| "deuda">("normal")
+    const [tipo, setTipo] = useState<"normal"| "deuda">(cuenta.tipo)
 
     const id = cuenta.id
 
@@ -31,7 +31,7 @@ export default function CuentaEditarForm({ cuenta, onGuardar, onCerrar }: Cuenta
                 onChange={e => setTipo(e.target.value as "normal" | "deuda")}
             >
                 <option value="normal">Normal</option>
-                <option value="gasto">Gasto</option>
+                <option value="deuda">Deuda</option>
             </select>
             <button onClick={handleSubmit}>Guardar cambios</button>
         </div>
