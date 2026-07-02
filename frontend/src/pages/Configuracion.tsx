@@ -1,5 +1,6 @@
 import Categorias from '../components/configuracion/Categorias'
 import Cuentas from '../components/configuracion/Cuentas'
+import Bolsillos from '../components/configuracion/Bolsillos'
 
 export default function Configuracion() {
 
@@ -18,7 +19,7 @@ export default function Configuracion() {
 
             <Cuentas />
             <Categorias />
-            {/*<Bolsillos />*/}
+            <Bolsillos />
             {/*<Fondos />*/}
             
         </div>

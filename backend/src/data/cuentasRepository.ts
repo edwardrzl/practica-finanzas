@@ -19,7 +19,7 @@ export async function editarCuenta(id: number, nombre: string, valor: number, ti
     `).run(nombre, valor, tipo, id)
 
     const cuentaActualizada = db.prepare(`
-        SELECT * FROM categorias WHERE id = ?
+        SELECT * FROM cuentas WHERE id = ?
     `).get(id) as Cuenta
 
     return cuentaActualizada
