@@ -11,7 +11,7 @@ db.exec(`
         id              INTEGER PRIMARY KEY AUTOINCREMENT,
         valor           INTEGER NOT NULL,
         descripcion     TEXT    NOT NULL,
-        id_categoria    INTEGER NOT NULL,
+        id_categoria    INTEGER,
         id_bolsillo     INTEGER NOT NULL,
         id_cuenta       INTEGER NOT NULL,
         fecha           TEXT    NOT NULL DEFAULT (datetime('now')),

@@ -1,4 +1,4 @@
-import { type Categoria, type Movimiento, type MovimientoNuevo} from '../types/types'
+import { type Bolsillo, type Categoria, type Cuenta, type Movimiento, type MovimientoNuevo} from '../types/types'
 
 async function obtenerMovimientos(): Promise<Movimiento[]> {
 
@@ -9,15 +9,14 @@ async function obtenerMovimientos(): Promise<Movimiento[]> {
 }
 
 
-/*async function actualizarMovimiento(movimiento: Movimiento): Promise<Movimiento> {
+async function actualizarMovimiento(movimiento: Movimiento): Promise<Movimiento> {
   const res = await fetch(`http://localhost:3000/api/movimientos/${movimiento.id}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      nombre: movimiento.nombre,
-      valor: movimiento.valor,
+      descripcion: movimiento.descripcion,
     })
   })
 
@@ -27,9 +26,9 @@ async function obtenerMovimientos(): Promise<Movimiento[]> {
 
   const movimientoActualizada = await res.json()
   return movimientoActualizada
-}*/
+}
 
-async function crearMovimiento(nuevoMovimiento: MovimientoNuevo): Promise<{"movimiento": Movimiento, "categoria": Categoria}> {
+async function crearMovimiento(nuevoMovimiento: MovimientoNuevo): Promise<{"movimiento": Movimiento, "categoria": Categoria, "cuenta": Cuenta, "bolsillo": Bolsillo}> {
   
   const res = await fetch(`http://localhost:3000/api/movimientos`, {
     method: 'POST',
@@ -51,15 +50,6 @@ async function crearMovimiento(nuevoMovimiento: MovimientoNuevo): Promise<{"movi
   return datos
 }
 
-/*async function borrarMovimiento(id: number): Promise<void> {
-  const res = await fetch(`http://localhost:3000/api/movimientos/${id}`, {
-    method: 'DELETE'
-  })
 
-  if (!res.ok) {
-    throw new Error('Error al borrar la movimiento')
-  }
-}
-*/
-export { crearMovimiento }
-//export { obtenerMovimientos, actualizarMovimiento, crearMovimiento, borrarMovimiento }
+
+export { obtenerMovimientos, crearMovimiento, actualizarMovimiento }

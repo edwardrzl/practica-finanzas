@@ -14,31 +14,39 @@ export default function BotonAgregarMovimiento() {
     const [valor, setValor] = useState<number>(0)
     const [tipo, setTipo] = useState<"ingreso"| "gasto">("gasto")
     const { categorias, setCategorias } = useCategorias()
-    const { bolsillos } = useBolsillos()
-    const { cuentas } = useCuentas()
+    const { bolsillos, setBolsillos } = useBolsillos()
+    const { cuentas, setCuentas } = useCuentas()
     const [idCategoria, setIdCategoria] = useState<number | "">("")
     const [idBolsillo, setIdBolsillo] = useState<number | "">("")
     const [idCuenta, setIdCuenta] = useState<number | "">("")
 
 
-    const formularioIncompleto = idCategoria === "" || idBolsillo === "" || idCuenta === "" || descripcion === ""
+    const formularioIncompleto = (tipo === "gasto" && idCategoria === "") || idBolsillo === "" || idCuenta === "" || descripcion === ""
 
     async function handleCrear(movimientoNuevo: MovimientoNuevo) {
 
-        const {movimiento, categoria} = await crearMovimiento(movimientoNuevo) 
+        const {movimiento, categoria, cuenta, bolsillo} = await crearMovimiento(movimientoNuevo) 
         //el movimiento no le tengo uso aun, no sé si tenga en un futuro
-        setCategorias(prev => 
-        prev.map(c => c.id === categoria.id ? categoria : c)
-    )
+        if (categoria !== null) {
+        setCategorias(prev => prev.map(c => c.id === categoria.id ? categoria : c))
+        }
+        setCuentas(prev => 
+        prev.map(c => c.id === cuenta.id ? cuenta : c))
+        setBolsillos(prev => 
+        prev.map(b => b.id === bolsillo.id ? bolsillo : b))
             setFormMovimiento(false) 
     }
 
     function handleClickCrear() {
-        if (idCategoria === "" || idBolsillo === "" || idCuenta === "") {
-            return // no debería pasar si el botón está disabled, pero es una guarda extra
+        if (idBolsillo === "" || idCuenta === "") {
+            return
+        }
+        if (tipo === "gasto" && idCategoria === "") {
+            return
         }
 
-        handleCrear({valor, descripcion, tipo, idCategoria, idBolsillo, idCuenta})
+        handleCrear({
+            valor, descripcion, tipo, idCategoria: tipo === "ingreso" ? null : (idCategoria as number), idBolsillo, idCuenta})
     }
 
     return (
@@ -67,7 +75,12 @@ export default function BotonAgregarMovimiento() {
                 <select 
                     id="tipo" 
                     value={tipo} 
-                    onChange={e => setTipo(e.target.value as "ingreso" | "gasto")}
+                    onChange={e => {
+                        setTipo(e.target.value as "ingreso" | "gasto")
+                        const nuevoTipo = e.target.value as "ingreso" | "gasto"
+                        setTipo(nuevoTipo)
+                        if (nuevoTipo === "ingreso") setIdCategoria("")
+                    }}
                 >
                     <option value="ingreso">Ingreso</option>
                     <option value="gasto">Gasto</option>
@@ -78,6 +91,7 @@ export default function BotonAgregarMovimiento() {
                     id="categoria"
                     value={idCategoria}
                     onChange={e => setIdCategoria(e.target.value === "" ? "" : Number(e.target.value))}
+                    disabled={tipo === "ingreso"}
                 >
                     <option value="" hidden>Escoge categoría</option>
                     {categorias.map(c => (
@@ -108,8 +122,6 @@ export default function BotonAgregarMovimiento() {
                         <option key={c.id} value={c.id}>{c.nombre}</option>
                     ))}
                 </select>
-
-
 
                 <button onClick={handleClickCrear} disabled={formularioIncompleto}>Crear movimiento</button>
             </div>

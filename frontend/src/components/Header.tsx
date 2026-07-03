@@ -9,7 +9,7 @@ export default function Header() {
   
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
                 <button onClick={() => navigate('/')}>Home</button>
-                <button>Historial de movimientos</button>
+                <button onClick={() => navigate('/historial')}>Historial de movimientos</button>
                 <button onClick={() => navigate('/configuracion')}>Configuración</button>
             </div>
         </div>  

@@ -2,7 +2,7 @@ export interface Movimiento {
     id: number
     valor: number
     descripcion: string
-    idCategoria: number
+    idCategoria: number | null
     idBolsillo: number
     idCuenta: number
     fecha: string
