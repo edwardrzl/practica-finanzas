@@ -3,16 +3,19 @@ import { type Movimiento } from '../types/types'
 import {  obtenerMovimientos, actualizarMovimiento } from '../api/movimientosClient'
 import MovimientoEditarForm from '../components/historial/MovimientoEditarForm'
 import { useMovimientos } from '../context/MovimientosContext'
+import { useCategorias } from '../context/CategoriasContext'
 
 export default function Historial() {
     const [movimientoEditando, setMovimientoEditando] = useState<Movimiento | null>(null)
 
     const { movimientos, setMovimientos } = useMovimientos()
+    const { categorias, setCategorias } = useCategorias()
 
     useEffect(() => {      
             const fetchMovimientos = async () => {
                 const movimientos = await obtenerMovimientos()
                 setMovimientos(movimientos)
+                console.log(movimientos)
                 }
             fetchMovimientos()
     }, []) 
@@ -28,15 +31,19 @@ export default function Historial() {
     return (
         <div>
             <h2>Movimientos</h2>
-            <ul>
-                
-                {movimientos.map((m) => (
-                    <li key={m.id}>
-                        Tipo: {m.tipo === "gasto" ? "-" : "+"}. {m.descripcion}. Valor: {m.valor}. Categoria: {m.idCategoria === null ? "Ingreso" : m.idCategoria}. {m.fecha}
-                        <button onClick={() => setMovimientoEditando(m)}>Editar</button>
-                    </li>
+            <ul>      
+                {movimientos.map((m) => {
+                    const categoria = categorias.find(c => c.id === m.idCategoria)
                     
-                ))}
+                    return (
+                        <li key={m.id}>
+                            Tipo: {m.tipo === "gasto" ? "-" : "+"}. {m.descripcion}. Valor: {m.valor}. 
+                            Categoria: {m.idCategoria === null ? "Ingreso" : (categoria?.nombre ?? "Sin categoría")}. 
+                            {m.fecha}
+                            <button onClick={() => setMovimientoEditando(m)}>Editar</button>
+                        </li>
+                    )
+                })}
             </ul>
 
             {movimientoEditando && (
@@ -46,7 +53,6 @@ export default function Historial() {
                     onCerrar={() => setMovimientoEditando(null)}
                 />
             )}
-
         </div>
     )
 }

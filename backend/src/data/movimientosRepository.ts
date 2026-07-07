@@ -2,7 +2,14 @@ import db from './database'
 import { Movimiento } from '../types/types'
 
 export async function obtenerMovimientos(): Promise<Movimiento[]>{
-    const movimientos = db.prepare('SELECT * FROM movimientos').all() as Movimiento[]
+    const movimientos = db.prepare(`
+    SELECT 
+        id, valor, descripcion, tipo, fecha,
+        id_categoria AS idCategoria,
+        id_bolsillo AS idBolsillo,
+        id_cuenta AS idCuenta
+    FROM movimientos
+`).all() as Movimiento[]
     return movimientos
 }
 
