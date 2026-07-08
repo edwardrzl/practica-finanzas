@@ -17,6 +17,7 @@ export async function obtenerPorTipo(tipo: string): Promise<Movimiento[]>{
     const movimientos = db.prepare('SELECT * FROM movimientos WHERE tipo = ?').all(tipo) as Movimiento[]
     return movimientos
 }
+/*COMMIT PRUEBA */
 
 export async function crear(
     valor: number,
