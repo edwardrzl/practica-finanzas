@@ -19,5 +19,9 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
-  }
+  },
+
+  // Los tests no van al build de producción.
+  // Ver stack/testing.md § Estructura de archivos.
+  "exclude": ["src/**/*.test.ts", "vitest.config.ts"]
 }

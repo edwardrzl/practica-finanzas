@@ -6,11 +6,16 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/server.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": ">=22 <23"
+  },
   "dependencies": {
     "better-sqlite3": "^12.11.1",
     "cors": "^2.8.6",
@@ -22,6 +27,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^26.0.1",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   }
 }
