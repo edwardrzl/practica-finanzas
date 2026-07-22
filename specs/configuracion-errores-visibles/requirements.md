@@ -82,9 +82,15 @@ entidades.
 
 ### R1 — Rechazo de borrado de entidades en uso [P1]
 
-**R1.1** IF se solicita borrar una categoría, cuenta o bolsillo que tiene
-al menos un movimiento asociado, THEN THE SYSTEM SHALL rechazar la
-operación sin modificar ningún dato.
+> **Término único: "en uso".** Una categoría, cuenta o bolsillo está
+> **en uso** cuando al menos un movimiento la referencia. Es el término
+> que usan los `R*.*`, el código de error y el mensaje al usuario. La
+> causa concreta (cuántos movimientos) va en el detalle del mensaje
+> —R1.3—, no en el término.
+
+**R1.1** IF se solicita borrar una categoría, cuenta o bolsillo que está
+en uso, THEN THE SYSTEM SHALL rechazar la operación sin modificar ningún
+dato.
 Tests: unit, integration
 
 **R1.2** WHEN THE SYSTEM rechaza un borrado por entidad en uso, THE
@@ -97,8 +103,8 @@ SYSTEM SHALL incluir en la respuesta el nombre de la entidad y la
 cantidad exacta de movimientos que la referencian.
 Tests: unit
 
-**R1.4** WHEN se solicita borrar una entidad sin movimientos asociados,
-THE SYSTEM SHALL borrarla y responder 204.
+**R1.4** WHEN se solicita borrar una entidad que no está en uso, THE
+SYSTEM SHALL borrarla y responder 204.
 Tests: unit, integration
 
 **R1.5** IF se solicita borrar una entidad que no existe, THEN THE SYSTEM
@@ -132,6 +138,29 @@ Tests: integration
 THE SYSTEM SHALL dejar de mostrar el mensaje de error anterior.
 Tests: integration
 
+**R2.5** WHILE una solicitud de borrado está en curso, THE SYSTEM SHALL
+mantener inactivo el control que la inició, y reactivarlo al recibir la
+respuesta.
+Tests: integration
+
+<!-- R2.5 (añadido en /spec-clarify): sin indicador de progreso además
+     del botón inactivo. Contra SQLite local la respuesta llega en
+     milisegundos y un spinner sería un parpadeo. Cubre además el doble
+     clic sobre Eliminar. -->
+
+**R2.6** IF una solicitud a Configuración no obtiene respuesta del
+backend, THEN THE SYSTEM SHALL mostrar un mensaje de fallo de
+comunicación, distinguible del mensaje de un rechazo del backend.
+Tests: integration
+
+<!-- R2.6 (añadido en /spec-clarify): "no obtiene respuesta" cubre
+     servidor apagado, red caída y timeout. Sin esto, un backend apagado
+     se ve igual que una entidad en uso, y la acción del usuario es
+     opuesta (reintentar vs. no insistir). Aplica a las tres
+     operaciones, no sólo al borrado: es el mismo fallo de transporte.
+     Sin botón de reintentar — descartado por alcance. -->
+
+
 ### R3 — Errores visibles en crear y editar [P2]
 
 **R3.1** IF una solicitud de creación es rechazada por el backend, THEN
@@ -160,6 +189,17 @@ a las tres entidades de Configuración —categorías, cuentas y bolsillos—
 sin diferencias observables entre ellas.
 Tests: integration
 
+**NFR2** THE SYSTEM SHALL anunciar todo mensaje de error de Configuración
+a tecnologías de asistencia en el momento en que aparece, sin requerir
+que el usuario mueva el foco.
+Tests: accessibility
+
+<!-- NFR2 (añadido en /spec-clarify): un mensaje insertado dinámicamente
+     en el DOM no lo anuncia un lector de pantalla salvo que su
+     contenedor sea una región activa. En la práctica se cumple con
+     role="alert", de costo casi nulo. Verificable inspeccionando el
+     contenedor del mensaje. -->
+
 <!-- Sin NFRs de performance: la app corre en local contra SQLite
      embebido, con un usuario y decenas de filas. Un umbral de latencia
      acá sería teatro (ver stack/testing.md § Cobertura mínima). -->
@@ -178,6 +218,13 @@ Tests: integration
   conteo de movimientos en cada listado; se decidió dejar que el intento
   ocurra y explicar el resultado.
 - **Errores fuera de Configuración** (pantallas Home e Historial).
+- **Datos desactualizados entre pestañas.** Si la lista de Configuración
+  está abierta mientras otra pestaña cambia los movimientos, la pantalla
+  puede mostrar un estado viejo. Descartado: con un solo usuario hace
+  falta abrir la app dos veces a propósito, el backend valida contra el
+  estado real de todos modos, y el peor caso es un mensaje
+  desactualizado que se corrige recargando. No se implementa
+  sincronización entre pestañas ni recarga automática tras un fallo.
 - **Corregir el movimiento `id=1`**, que guarda `valor: -100` con
   `tipo: 'gasto'` mientras el resto guarda el valor positivo. Es dato
   viejo inconsistente, anterior a la lógica actual. Merece su propia spec.
@@ -211,6 +258,27 @@ Tests: integration
   → A: Sí. R1.2 exige un código de error estable distinguible, que es
   exactamente lo que `stack/architecture.md § Manejo de errores` declaró
   pendiente.
+
+### Session 2026-07-22 (`/spec-clarify`)
+
+- Q: ¿Qué ve el usuario mientras la operación de borrado está en curso?
+  → A: El control que la inició queda inactivo hasta recibir la
+  respuesta, sin indicador de progreso — contra SQLite local un spinner
+  sería un parpadeo. Cubre además el doble clic. **Añadido R2.5.**
+- Q: ¿La spec cubre el caso de backend apagado o red caída?
+  → A: Sí, con un mensaje distinguible del rechazo del backend. Sin
+  botón de reintentar (descartado por alcance). Aplica a las tres
+  operaciones. **Añadido R2.6.**
+- Q: ¿Qué término único se usa para "entidad con movimientos"?
+  → A: **"en uso"**. Definido al inicio de R1 y aplicado en R1.1 y R1.4.
+  Sirve igual como código de error (`ENTIDAD_EN_USO`) que como texto al
+  usuario. Descartado "con movimientos asociados" por largo para código.
+- Q: ¿Se exige accesibilidad para los mensajes de error?
+  → A: Sí. Los mensajes se anuncian a tecnologías de asistencia al
+  aparecer, sin mover el foco. **Añadido NFR2.**
+- Q: ¿Se cubre el estado desactualizado entre pestañas?
+  → A: No — declarado en *Fuera de scope*. Sin sincronización entre
+  pestañas ni recarga automática tras un fallo.
 
 ## OPEN_QUESTIONS
 

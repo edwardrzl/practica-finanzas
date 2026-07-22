@@ -26,7 +26,9 @@
 - [ ] CHK-005 ¿Cero adjetivos sin métrica ("rápido", "intuitivo", "robusto", "escalable")? [Claridad]
 - [ ] CHK-006 ¿Cero marcadores [NEEDS CLARIFICATION] pendientes? [Claridad]
 - [ ] CHK-007 ¿Cada R*.* admite UNA sola interpretación razonable? [Claridad]
-- [ ] CHK-008 ¿Los términos de dominio se usan consistentemente (sin sinónimos intercambiados)? [Claridad]
+- [x] CHK-008 ¿Los términos de dominio se usan consistentemente (sin sinónimos intercambiados)? [Claridad]
+      <!-- /spec-clarify: fijado "en uso" como término único, definido al
+           inicio de R1 y aplicado en R1.1 y R1.4. -->
 
 ## Testeabilidad
 
@@ -55,11 +57,22 @@
 - [ ] CHK-018 ¿El texto del mensaje al usuario está especificado en cuanto a qué información incluye, sin fijar la redacción exacta? [R1.3]
 - [ ] CHK-019 ¿Se declara explícitamente que ningún mensaje de error puede exponer montos, saldos ni descripciones de movimientos? [R1.3, Gap]
 - [ ] CHK-020 ¿NFR1 (comportamiento idéntico en las tres entidades) es verificable entidad por entidad? [NFR1]
-- [ ] CHK-021 ¿Está especificado qué ve el usuario mientras la operación está en curso (estado de carga)? [Gap]
-- [ ] CHK-022 ¿Se define qué pasa si el backend no responde o la red falla, distinto de un rechazo con mensaje? [Gap]
+- [x] CHK-021 ¿Está especificado qué ve el usuario mientras la operación está en curso (estado de carga)? [R2.5]
+      <!-- /spec-clarify: R2.5 — control inactivo mientras la solicitud
+           está en curso, sin indicador de progreso. -->
+- [x] CHK-022 ¿Se define qué pasa si el backend no responde o la red falla, distinto de un rechazo con mensaje? [R2.6]
+      <!-- /spec-clarify: R2.6 — mensaje que identifica el fallo como de
+           comunicación, distinguible del rechazo del backend. -->
 - [ ] CHK-023 ¿Las tres alternativas descartadas (archivar, desvincular, cascada) están registradas con su razón, para no re-litigarlas en un amendment? [Estructura]
 - [ ] CHK-024 ¿Se declara que la feature no cambia el schema, dado que no hay mecanismo de migración? [Gap]
 - [ ] CHK-025 ¿El comportamiento del formulario tras un fallo (mantener datos ingresados) está especificado para crear y para editar? [R3.4]
+
+<!-- Items añadidos en /spec-clarify (numeración continúa, no se
+     renumera lo anterior). -->
+
+- [x] CHK-026 ¿Los mensajes de error se anuncian a tecnologías de asistencia al aparecer? [NFR2]
+- [x] CHK-027 ¿Está declarado que no se cubre el estado desactualizado entre pestañas, y por qué? [Estructura]
+- [ ] CHK-028 ¿El mensaje de fallo de comunicación (R2.6) es distinguible del rechazo del backend en el texto que ve el usuario, no sólo internamente? [R2.6]
 
 <!-- CHK-021 y CHK-022 apuntan a huecos REALES detectados al redactar:
      ningún R*.* de la spec cubre hoy el estado de carga ni el fallo de
