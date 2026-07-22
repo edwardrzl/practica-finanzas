@@ -1,9 +1,13 @@
 # Patterns
 
 > **Servicio**: `practica-finanzas`
-> **Estado**: pre-llenado por `/adopt` con las convenciones **observadas
-> en el código**. No son propuestas: es lo que el repo ya hace de forma
-> consistente. Donde el repo no es consistente, quedó marcado.
+> **Estado**: **completo** — pre-llenado por `/adopt` con las
+> convenciones **observadas en el código** y cerrado en la sesión de
+> Bootstrap del 2026-07-22.
+
+> Casi todo lo de acá no es propuesta: es lo que el repo ya hace de forma
+> consistente. Lo que sí se decidió en el Bootstrap está marcado
+> `DECIDIDO — pendiente de implementar`.
 
 ## Naming
 
@@ -51,8 +55,15 @@ en el repo todavía; usarlo si aparecen constantes de módulo.
 
 ## Imports
 
-**Rutas relativas, sin alias de path.** No hay `paths` configurado en
-ningún `tsconfig`, así que no existe `@/` — los imports son `./`, `../`.
+**Rutas relativas dentro de cada sub-proyecto.** No hay `paths`
+configurado en ningún `tsconfig`, así que no existe `@/` — los imports
+internos son `./`, `../`.
+
+**Única excepción prevista**: `@shared/*`, el alias hacia `shared/types/`
+al root, cuando se implemente (ver `stack/architecture.md § Tipos del
+dominio`). Es el único alias que va a existir. No agregar `@/` para
+imports internos: el objetivo del alias es cruzar el borde entre
+sub-proyectos, no ahorrar `../`.
 
 Orden observado (a mantener): externos primero, después internos.
 
@@ -62,8 +73,17 @@ import cors from "cors";
 import categoriasRoutes from "./routes/categoriasRoutes";  // interno
 ```
 
-<!-- TODO: el orden no está forzado por linter. El backend ni siquiera
-tiene ESLint. Considerar agregar la regla si empieza a haber drift. -->
+**DECIDIDO — pendiente de implementar: el orden se fuerza con
+`eslint-plugin-simple-import-sort`**, en los dos sub-proyectos, junto con
+la llegada de ESLint al backend (`stack/tech-stack.md § Lint y formato`).
+
+Ordena y agrupa solo con `--fix`, así que deja de ser algo que revisar a
+mano y elimina los diffs por reordenamiento. Se eligió por sobre
+`import/order` por configuración: éste no necesita declarar los grupos.
+
+⚠️ Cuando entre `shared/` (`stack/architecture.md § Tipos del dominio`),
+el alias `@shared/*` es un grupo propio: **externos → `@shared/*` →
+internos relativos**.
 
 ## Convención de commits
 
@@ -97,26 +117,42 @@ feat(frontend): T2 - formulario de alta de movimiento [R2.2]
 
 ## Organización de tests
 
-<!-- TODO: no hay tests todavía. La decisión de estructura está en
-stack/testing.md § Estructura de archivos (sugerencia: co-located).
-No duplicar la política acá — este archivo apunta allá. -->
+La política vive en **`stack/testing.md`** — estructura de archivos,
+niveles obligatorios y cobertura. No se duplica acá a propósito: una
+convención escrita en dos lados se desincroniza.
 
-Convención obligatoria cuando existan: `// Derived from R*.*` al inicio
-de cada test. Detalle en `stack/testing.md`.
+Convención obligatoria: `// Derived from R*.*` al inicio de cada test,
+para que el gate G4 pueda trazar test → requirement.
 
 ## Logging
 
-**No hay framework de logging.** El único log del repo es un
-`console.log` de arranque (`backend/src/server.ts:19`).
+Hoy el único log del repo es un `console.log` de arranque
+(`backend/src/server.ts:19`).
 
-<!-- TODO: si se agrega logging, definir niveles y formato. Restricción
-que ya aplica: este servicio maneja datos financieros — NO loguear
-montos, saldos ni descripciones de movimientos. Ver stack/security.md
-§ PII / datos sensibles. -->
+**DECIDIDO — pendiente de implementar: wrapper propio sobre `console`,
+sin librería.** Un módulo chico en el backend que exponga `debug`,
+`info`, `warn` y `error`. Sin Pino ni Winston: un logger estructurado
+rinde cuando hay agregación de logs, y acá la salida es una terminal.
+
+Lo que compra igual: **un punto único** por donde pasa todo log, que es
+donde después se enchufa algo real sin tocar los call sites, y donde vive
+la regla de abajo.
+
+🔒 **Restricción, ya vigente aunque el wrapper no exista**: este servicio
+maneja datos financieros — **NO loguear montos, saldos ni descripciones
+de movimientos**. Loguear identificadores y nombres de operación, nunca
+el contenido. Ver `stack/security.md § PII / datos sensibles`.
+
+Regla para código nuevo: nada de `console.log` suelto en el backend una
+vez que el wrapper exista.
 
 ## Error reporting
 
-**Ninguno.** Sin Sentry, sin Datadog, sin App Insights.
+**Ninguno, y es deliberado.** Sin Sentry, sin Datadog, sin App Insights.
 
-<!-- TODO: no tiene sentido mientras la app corra sólo en local — no hay
-nadie a quien reportarle. Revisar si alguna vez se despliega. -->
+Un servicio de error reporting existe para enterarte de fallas que
+ocurren donde no estás mirando. Acá la app corre en local, con el dev
+mirando la terminal: no hay a quién reportarle.
+
+**Disparador de revisión**: el primer deploy a cualquier ambiente
+(`repo-config.yaml > runtime.type` deja de ser `none`).

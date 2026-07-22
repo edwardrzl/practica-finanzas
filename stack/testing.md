@@ -1,9 +1,13 @@
 # Testing
 
 > **Servicio**: `practica-finanzas`
-> **Estado**: 🔴 **OPEN_QUESTION de prioridad ALTA.** No hay tests en el
-> repo. Este archivo documenta el estado real y las decisiones
-> pendientes — no describe una política vigente.
+> **Estado**: **completo** — política acordada en la sesión de Bootstrap
+> del 2026-07-22.
+
+> ⚠️ **La política está decidida; la infraestructura no está
+> implementada.** Sigue sin haber un solo test en el repo. Todo lo de
+> abajo marcado `DECIDIDO — pendiente de implementar` describe a qué se
+> ajusta el primer test cuando se escriba, no algo que ya corra.
 
 ## Estado actual
 
@@ -29,40 +33,58 @@ dejalo dicho en el `status.md` de cada spec.
 
 ## Niveles obligatorios
 
-<!-- TODO: decidir. Punto de partida sugerido para este repo, en orden
-de retorno sobre esfuerzo:
+**DECIDIDO — un solo nivel obligatorio: unit sobre
+`backend/src/services/`.**
 
-1. unit sobre `backend/src/services/` — es donde vive la lógica de
-   negocio real (cálculo de sobrante, actualización de saldos). Los
-   bugs del historial se concentran ahí: 06c9649 "Arreglo actualiza
-   sobrante al actualizar categoria", 099da58 "fix bug editar".
-2. integration sobre `backend/src/data/` contra una SQLite en memoria
-   (`new Database(":memory:")`) — barato y rápido, no necesita
-   testcontainers.
-3. e2e recién si la app crece.
+| Nivel | Alcance | Estado |
+|---|---|---|
+| unit | `backend/src/services/` | 🔴 **obligatorio** |
+| integration | `backend/src/data/` contra SQLite en memoria | recomendado |
+| e2e | flujo completo (Playwright) | no aplica todavía |
 
-No fijar los tres niveles como obligatorios de entrada: sin CI que los
-corra, una política que nadie ejecuta es peor que ninguna. -->
+Por qué sólo `services/`: es donde vive la lógica de negocio real
+(cálculo de sobrante, actualización de saldos, límites) y donde se
+concentran los bugs del historial — `06c9649` *"Arreglo actualiza
+sobrante al actualizar categoria"*, `099da58` *"fix bug editar"*. Los
+controllers y las routes son plomería: parsean y delegan.
+
+Por qué **no** los tres de entrada: una política que nadie ejecuta es
+peor que ninguna. Se empieza por lo que paga y se sube el listón cuando
+haya evidencia de que hace falta.
+
+Integration sobre `data/` queda **recomendado y barato** una vez hecho el
+refactor de § Aislamiento de la capa de datos: `new Database(":memory:")`
+levanta una base real y aislada por test, sin Docker ni testcontainers.
+Se sube a obligatorio si aparecen bugs de SQL.
 
 ## Cobertura mínima
 
-<!-- TODO: no fijar un % hasta que exista el primer test. Un umbral sin
-tests es teatro. Sugerencia: arrancar con "toda lógica nueva en
-services/ va con test" y medir después. -->
+**DECIDIDO — sin umbral numérico.** Un porcentaje mínimo sobre cero tests
+es teatro: se cumple testeando lo trivial.
+
+La regla es de comportamiento, no de métrica:
+
+> **Toda lógica nueva en `services/` va con test en el mismo PR.**
+
+Se mide cuando exista una base sobre la cual medir. Recién ahí tiene
+sentido discutir un umbral, y el candidato será cobertura de `services/`,
+no del repo entero.
 
 ## Frameworks
 
-<!-- TODO: decidir. Candidato fuerte: **Vitest**.
+**DECIDIDO — Vitest en los dos sub-proyectos.** `pendiente de
+implementar`. Ver `stack/tech-stack.md § Tests` para el razonamiento
+completo; en corto: comparte config con el Vite del frontend y corre
+TypeScript en el backend sin una capa de transpilación aparte.
 
-- El frontend ya usa Vite 8 — Vitest comparte la config, sin setup extra.
-- En el backend corre TypeScript sin cadena de transpilación aparte,
-  que es justo lo que hace incómodo a Jest acá.
-- Un solo framework para los dos sub-proyectos = una sola convención.
+Cada sub-proyecto lleva su propia instalación y su propio script `test`
+— no hay workspace que comparta dependencias.
 
-Alternativa sin dependencias: `node:test` (nativo desde Node 18) para el
-backend. Menos ergonómico, cero deps.
+Otros runners están **prohibidos** (`stack/constraints.md § Librerías
+prohibidas`): dos runners son dos configs y dos sintaxis de assertions.
 
-Decidir también el runner de e2e sólo cuando haga falta (Playwright). -->
+Runner de e2e: se decide si e2e alguna vez pasa a aplicar. El candidato
+por default sería Playwright, pero no se declara nada hasta entonces.
 
 ## Convención `// Derived from R*.*`
 
@@ -86,44 +108,115 @@ también la capa cuando el requirement la declara:
 
 ## Política de mocks
 
-<!-- TODO: decidir. Nota específica de este repo: la DB es **propia**,
-no un tercero — la regla de la metodología dice que la DB propia NO se
-mockea, se usa de verdad. Con SQLite eso es trivial y barato:
-`new Database(":memory:")` levanta una base real y aislada por test, sin
-Docker ni testcontainers.
+**DECIDIDO — casi no se mockea.**
 
-O sea: acá casi no hay razón legítima para mockear. Si aparece un mock
-de la capa `data/`, es señal de que la lógica está en el lugar
-equivocado. -->
+La regla de la metodología: **la DB propia no se mockea, se usa de
+verdad.** Se mockean terceros (APIs externas, servicios de pago,
+mensajería), y este repo no tiene ninguno — SQLite embebido, sin
+servicios externos, sin API keys.
 
-⚠️ Obstáculo conocido: `backend/src/data/database.ts` exporta una
-conexión **singleton** que los repositories importan directo. Eso impide
-inyectar una base en memoria sin tocar el código. Resolverlo es
-prerrequisito de cualquier test de la capa `data/`. Ver
-`stack/architecture.md` § Inyección de dependencias.
+Con SQLite usar la base de verdad es trivial y barato:
+`new Database(":memory:")` levanta una base real, aislada por test, en
+milisegundos.
+
+> 🚩 **Si aparece un mock de la capa `data/`, es un olor, no una
+> solución.** Casi siempre significa que hay lógica de negocio dentro de
+> un repository que debería estar en `services/`
+> (`stack/constraints.md § Patterns desaconsejados`). Arreglar la capa,
+> no mockearla.
+
+## Aislamiento de la capa de datos
+
+**DECIDIDO — pendiente de implementar. Los repositories reciben la
+conexión.** Esta es la decisión que `stack/architecture.md § Inyección de
+dependencias` difirió a este archivo.
+
+Hoy `backend/src/data/database.ts` exporta una conexión **singleton**
+(`export default db`) que los cuatro repositories importan directo. Eso
+ata cada repository a un archivo `.db` concreto: no hay forma de darle
+una base en memoria sin tocar el código. Es prerrequisito de cualquier
+test de la capa `data/`.
+
+Forma acordada: cada repository pasa a ser una **factory que recibe la
+conexión**.
+
+```ts
+// data/categoriasRepository.ts
+export const crearCategoriasRepository = (db: Database) => ({
+  listar: () => db.prepare("SELECT ...").all(),
+});
+```
+
+- `server.ts` (o donde se componga el backend) le pasa el singleton al
+  arrancar — el comportamiento en runtime no cambia.
+- Los tests le pasan `new Database(":memory:")`, una por test.
+
+Se eligió por sobre "singleton + archivo `.db` temporal por suite"
+porque ese camino deja estado global compartido entre suites del mismo
+proceso, y `:memory:` es más rápido y se limpia solo.
+
+Alcance: los 4 repositories, `database.ts` y sus call sites en
+`services/`. Es refactor puro — sin cambio de comportamiento observable,
+o sea candidato a spec `refactor-only`.
 
 ## Estructura de archivos
 
-<!-- TODO: decidir entre co-located (`src/services/foo.ts` +
-`src/services/foo.test.ts`) o directorio aparte (`tests/`).
-Sugerencia: co-located — con la estructura por capas que ya tiene el
-backend, mantiene el test al lado de lo que prueba. -->
+**DECIDIDO — co-located.** El test vive al lado de lo que prueba, con el
+sufijo `.test.ts`:
+
+```
+backend/src/services/movimientosService.ts
+backend/src/services/movimientosService.test.ts
+```
+
+Razón: con la estructura por capas que ya tiene el backend, un árbol
+`tests/` paralelo sería una segunda copia de la misma jerarquía que hay
+que mantener sincronizada a mano. Co-located, el test se mueve, se
+renombra y se borra junto con su código.
+
+Los `.test.ts` quedan fuera del build de producción vía `exclude` en el
+`tsconfig` de build.
+
+Naming: `<archivo>.test.ts`, camelCase igual que el archivo que prueba
+(`stack/patterns.md § Naming`).
 
 ## TDD vs test-after
 
-<!-- TODO: definir política. La metodología (§4 Fase 4) recomienda tests
-primero cuando hay lógica de negocio compleja; test-after es aceptable
-para boilerplate. `/spec-implement` aplica tests primero por default.
+**DECIDIDO — TDD en `services/`, test-after aceptable en el resto.**
 
-Para este repo: la lógica de `services/` (saldos, sobrantes, límites) es
-exactamente el caso donde TDD paga. Los controllers y routes son
-boilerplate. -->
+| Capa | Política |
+|---|---|
+| `backend/src/services/` | **tests primero** |
+| `controllers/`, `routes/`, `data/` | test-after, o sin test si no hay lógica |
+| `frontend/` | test-after |
+
+`services/` es exactamente el caso donde TDD paga: reglas de saldo,
+sobrante y límite, con muchos casos borde y sin UI de por medio. Escribir
+el caso antes obliga a definir qué se espera cuando el monto es cero,
+cuando la categoría no existe, cuando el saldo queda negativo.
+
+El resto es plomería: parsear un request y delegar. Escribir el test
+antes ahí no descubre nada de diseño.
+
+`/spec-implement` aplica tests primero por default (metodología §4 Fase
+4), que coincide con esta política para el único nivel obligatorio.
 
 ## CI gates de tests
 
-**No hay CI.** Sin `.github/workflows/`, sin ningún pipeline.
+**No hay CI todavía.** Sin `.github/workflows/`, sin ningún pipeline.
 
-<!-- TODO: al agregar el primer test, agregar también un workflow de
-GitHub Actions que lo corra en cada PR. Sin eso, los tests se pudren.
-Cruzar con `repo-config.yaml > environments[].gate`, que hoy dice
-"TODO — no hay CI ni tests todavía". -->
+**DECIDIDO — pendiente de implementar: workflow de GitHub Actions en cada
+PR**, que corra **lint y test en los dos sub-proyectos**. Entra **junto
+con el primer test**, no después: sin nada que los corra en cada PR, los
+tests se pudren en silencio y la política de arriba se vuelve decorativa.
+
+Forma mínima: un workflow con matriz sobre `backend` y `frontend`, Node
+22 (`stack/tech-stack.md § Versiones pineadas`), `npm ci` en cada
+`directory`, después `npm run lint` y `npm test`.
+
+⚠️ **Esto cierra una pregunta abierta de la adopción.**
+`repo-config.yaml > environments[].gate` para `main` está hoy sin
+definir, justamente por la ausencia de CI y de tests. Cuando el workflow
+exista, ese gate pasa a ser **"CI verde en el PR"**, y hay que
+actualizarlo ahí — `repo-config.yaml` es la fuente de verdad del gate,
+no este archivo.

@@ -1,7 +1,8 @@
 # Constraints
 
 > **Servicio**: `practica-finanzas`
-> **Estado**: pre-llenado por `/adopt` con lo observado en el código.
+> **Estado**: **completo** — pre-llenado por `/adopt` con lo observado en
+> el código y cerrado en la sesión de Bootstrap del 2026-07-22.
 
 > Lo que está **prohibido o desaconsejado** en este repo. Anti-patrones
 > específicos del proyecto. Cada constraint con justificación corta
@@ -9,12 +10,26 @@
 
 ## Librerías / dependencias prohibidas
 
-<!-- TODO: no hay prohibiciones declaradas todavía. -->
+**Criterio general**: el repo hoy tiene **cero dependencias de
+conveniencia** (sin lodash, sin moment). Mantener esa disciplina —
+agregar una dependencia requiere justificar por qué la stdlib o la
+plataforma no alcanzan.
 
-Criterio a aplicar mientras tanto: el repo hoy tiene **cero
-dependencias de conveniencia** (sin lodash, sin moment, sin axios — se
-usa `fetch` nativo). Mantener esa disciplina: agregar una dependencia
-requiere justificar por qué la stdlib o la plataforma no alcanzan.
+**Prohibiciones concretas.** Cada una es el reverso de una decisión ya
+tomada: no se prohíben por malas, sino porque el repo **ya eligió otra
+cosa** y tener las dos daría dos formas de hacer lo mismo.
+
+| Prohibido | Porque ya se eligió | Dónde está la decisión |
+|---|---|---|
+| ORM / query builder (Prisma, TypeORM, Knex, Drizzle) | SQL crudo en `data/`, un repository por entidad | `tech-stack.md § Persistencia` |
+| Librerías de estado en frontend (Redux, Zustand, Jotai) | Context API, un Context por entidad | `architecture.md § Capas y boundaries` |
+| Clientes HTTP (axios, got, superagent) | `fetch` nativo, ya usado en los 4 clientes de `api/` | `architecture.md § Capas y boundaries` |
+| Otros runners de test (Jest, Mocha, AVA) | Vitest, único runner del monorepo | `tech-stack.md § Tests` |
+
+> **Prohibido ≠ imposible.** Significa que meter una de éstas requiere
+> una decisión explícita que revierta la de la derecha y actualice
+> `stack/` — no que sea intocable para siempre. Lo que no se acepta es
+> que entre de contrabando en el diff de una feature.
 
 ## Patterns desaconsejados
 
@@ -55,9 +70,23 @@ Tres valores están hardcodeados y deberían ser configuración:
 | `http://localhost:3000` | los 4 clientes de `frontend/src/api/` | repetido 16 veces; apuntar a otro backend exige tocar 4 archivos |
 | `cors()` sin origen | `backend/src/server.ts:10` | abierto a cualquier origen (ver `stack/security.md`) |
 
-<!-- TODO: extraer a variables de entorno. Es candidata natural a
-primera spec de modalidad `refactor-only` (refactoriza preservando
-comportamiento, sin crear requirements nuevos). -->
+**DECIDIDO — no se refactoriza ahora; se congela.** Los tres valores
+quedan como están.
+
+🔒 **Regla vigente desde ya: código nuevo no agrega más configuración
+hardcodeada.** Un endpoint nuevo, un cliente nuevo o un origen nuevo no
+pueden sumar un cuarto valor a esa tabla. La deuda está acotada en tres
+lugares conocidos y ahí se queda.
+
+**Cómo se salda, cuando se salde**: una spec de modalidad
+`refactor-only` (preserva comportamiento, no crea requirements nuevos)
+que extraiga los tres **juntos** — el puerto, la base URL y el origen de
+CORS son la misma decisión vista desde tres archivos. Sacar uno solo deja
+el problema y pierde el envión.
+
+**Disparador**: el primer deploy a cualquier ambiente. Hasta entonces no
+hay un segundo valor posible para ninguno de los tres, así que
+extraerlos no compraría nada.
 
 ## Restricciones de runtime / infra
 
@@ -65,14 +94,15 @@ comportamiento, sin crear requirements nuevos). -->
   No introducir operaciones pesadas en la capa `data/` asumiendo que
   son async — no lo son.
 - **`better-sqlite3` compila binarios nativos**: es sensible a la
-  versión de Node, que hoy **no está pineada** (no hay `.nvmrc` ni
-  `engines`). Cambiar de versión de Node puede exigir
-  `npm rebuild better-sqlite3`.
-- **Sin migraciones**: el schema se crea con `CREATE TABLE IF NOT
-  EXISTS` al arrancar (`database.ts:8`). Eso significa que **modificar
-  una tabla existente no tiene efecto** sobre una base ya creada — hay
-  que borrarla. Tenerlo presente antes de asumir que un cambio de
-  schema se aplicó.
+  versión de Node. El Bootstrap fijó **Node 22** vía `.nvmrc` +
+  `engines` (`tech-stack.md § Versiones pineadas`), pero eso está
+  **pendiente de implementar** — hasta entonces, cambiar de versión de
+  Node puede exigir `npm rebuild better-sqlite3`.
+- **Sin migraciones, por decisión**: el schema se crea con `CREATE TABLE
+  IF NOT EXISTS` al arrancar (`database.ts:8`). Eso significa que
+  **modificar una tabla existente no tiene efecto** sobre una base ya
+  creada — hay que borrar `finanzas.db`. Toda spec que cambie el schema
+  **debe decirlo en su `design.md`**. Ver `tech-stack.md § Persistencia`.
 
 ## Anti-patrones del methodology aplicados aquí
 

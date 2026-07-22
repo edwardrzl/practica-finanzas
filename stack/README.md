@@ -4,11 +4,15 @@
 > técnico, arquitectura, patrones, seguridad, restricciones, testing.
 > Es el primer set de archivos que el Service Agent lee al arrancar.
 >
-> **Estado inicial**: todos los archivos tienen `TODO` en cada sección.
-> El Service Agent (`AGENTS.md` § Bootstrap) se **negará a generar
-> código** mientras estos archivos no estén completos, porque sin ellos
-> los `design.md` de cada feature salen genéricos y los tests no pueden
-> trazar a convenciones de naming.
+> **Estado**: ✅ **Bootstrap completado el 2026-07-22.** Los seis
+> archivos están cerrados, sin pendientes. El Service Agent puede
+> generar código.
+>
+> Varias decisiones quedaron **declaradas pero todavía no
+> implementadas** (marcadas `DECIDIDO — pendiente de implementar`):
+> Vitest, ESLint en backend, Prettier, `.nvmrc`, `shared/types/`,
+> middleware de errores, Dependabot y el workflow de CI. Eso es
+> intencional — el Bootstrap declara el stack, no cambia código.
 
 > **La metodología es agnóstica al stack**: no preescribe ni lenguaje,
 > ni framework, ni arquitectura, ni testing framework. Tú decides.

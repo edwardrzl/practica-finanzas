@@ -1,13 +1,14 @@
 # Tech stack
 
 > **Servicio**: `practica-finanzas`
-> **Estado**: pre-llenado por `/adopt` (v0.23) con lo detectado en el
-> repo. Las secciones marcadas `TODO` son decisiones pendientes, no
-> datos faltantes.
+> **Estado**: **completo** — pre-llenado por `/adopt` (v0.23) con lo
+> detectado en el repo y cerrado en la sesión de Bootstrap del
+> 2026-07-22. Sin decisiones pendientes.
 
-> El Service Agent se **negará a generar código** mientras este archivo
-> tenga `TODO`. Razón: sin stack declarado, los `design.md` salen
-> genéricos y los tests no pueden trazar a las convenciones reales.
+> Algunas decisiones de abajo están **declaradas pero todavía no
+> implementadas** en el repo (marcadas `DECIDIDO — pendiente de
+> implementar`). Eso es intencional: el Bootstrap declara el stack, no
+> cambia código. Cada una es una tarea de tooling independiente.
 
 Monorepo de dos sub-proyectos sin tooling de workspace (no hay
 `package.json` al root, ni pnpm/yarn workspaces). Cada uno se instala y
@@ -31,8 +32,11 @@ y monta `/api/categorias`, `/api/cuentas`, `/api/bolsillos`,
 `/api/movimientos`. El frontend consume esa base URL, también
 hardcodeada, desde los 4 clientes de `src/api/`.
 
-<!-- TODO: extraer puerto y base URL a variables de entorno. Ver
-stack/constraints.md § Configuración. -->
+**DECIDIDO — deuda declarada, sin refactor ahora.** El puerto y la base
+URL siguen hardcodeados por ahora. La regla hacia adelante vive en
+`stack/constraints.md § Configuración`: **código nuevo no agrega más
+valores de entorno hardcodeados**. La extracción de los existentes es un
+cambio `refactor-only`, no se mezcla con features.
 
 ## Persistencia
 
@@ -46,9 +50,21 @@ builder — SQL crudo en la capa `src/data/`, un repository por entidad.
 - Tablas: `movimientos`, `categorias`, `bolsillos`, `cuentas`.
   `movimientos` tiene FKs a las otras tres.
 
-<!-- OPEN_QUESTION: el schema no está consolidado (la base se resetea
-seguido). Definir estrategia de migración antes de que haya datos que
-preservar. Sin esto, todo cambio de schema es destructivo. -->
+**Migraciones: no hay, y es una decisión, no un olvido.** `DECIDIDO —
+aceptado explícitamente`. Se sigue con `CREATE TABLE IF NOT EXISTS` al
+arrancar, y **todo cambio de schema es destructivo**: se borra
+`finanzas.db` y se deja que el arranque la vuelva a crear.
+
+Es sostenible porque hoy la base sólo tiene datos de prueba — de hecho
+`/adopt` la sacó del control de versiones justamente por eso.
+
+**Disparador de revisión**: el primer dato que valga la pena preservar.
+En ese momento, la salida acordada es archivos SQL numerados
+(`migrations/001_*.sql`) más una tabla `schema_version` que registre
+hasta dónde se aplicó — sin dependencias nuevas.
+
+⚠️ Mientras tanto: una spec que cambie el schema **debe** decir en su
+`design.md` que resetea la base.
 
 Sin cache (Redis/Memcached). No aplica al alcance actual.
 
@@ -67,17 +83,25 @@ Lockfiles: **commitear ambos**.
 
 ## Tests
 
-**No hay tests en el repo.** Ningún script `test`, ningún archivo de
-test, ninguna dependencia de testing en ninguno de los dos
-`package.json`.
+**Framework: Vitest en ambos sub-proyectos.** `DECIDIDO — pendiente de
+implementar` (hoy no hay ningún script `test`, ningún archivo de test ni
+dependencia de testing en los dos `package.json`).
 
-<!-- TODO: elegir framework. Vitest es el candidato natural: comparte
-config con Vite en el frontend y corre TS sin transpilación aparte en el
-backend. Detalle de política en stack/testing.md. -->
+Razón de la elección: en `frontend/` comparte configuración con Vite, que
+ya está; en `backend/` corre TypeScript sin una capa de transpilación
+aparte (a diferencia de Jest, que necesitaría `ts-jest` o Babel y choca
+con el ESM de Vite). Un solo runner y una sola sintaxis de assertions
+para todo el monorepo.
 
-⚠️ Esto bloquea los gates de verificación de AI-DLC (G2 requirements
-verificables, G4 implementación verificada), que se apoyan en tests
-ejecutables. Hasta resolverlo, esos gates son manuales.
+Cada sub-proyecto lleva su propia instalación y su propio script `test`
+— no hay workspace que compartir dependencias, igual que con el resto
+del tooling.
+
+Política de niveles, cobertura y organización: `stack/testing.md`.
+
+⚠️ Hasta que Vitest esté instalado y con tests reales, los gates de
+verificación de AI-DLC (G2 requirements verificables, G4 implementación
+verificada) siguen siendo **manuales**.
 
 ## Lint y formato
 
@@ -89,8 +113,21 @@ ejecutables. Hasta resolverlo, esos gates son manuales.
 
 Sin formatter (no hay Prettier) y sin pre-commit hooks (no hay Husky).
 
-<!-- TODO: decidir si el backend adopta la misma config de ESLint, y si
-se agrega un formatter compartido. -->
+**DECIDIDO — pendiente de implementar:**
+
+- **`backend/` adopta ESLint** con la misma configuración plana que
+  `frontend/` (`@eslint/js` + `typescript-eslint`), menos los plugins de
+  React, que no aplican. Script `npm run lint` en ambos.
+- **Prettier compartido**, configurado una vez al root y consumido por
+  los dos sub-proyectos. Es la excepción al "cada sub-proyecto por
+  separado": el formato debe ser idéntico a ambos lados o los diffs se
+  llenan de ruido.
+
+Sin pre-commit hooks por ahora — sin CI, un hook local es lo único que
+habría, y se saltea con `--no-verify`. Se reevalúa si aparece CI.
+
+Las convenciones que estas herramientas hacen cumplir se declaran en
+`stack/patterns.md`.
 
 ## Deploy target
 
@@ -102,12 +139,23 @@ Consistente con `repo-config.yaml > runtime.type: none`.
 
 ## Versiones pineadas
 
-**El runtime de Node no está pineado** — no hay `.nvmrc`, ni campo
-`engines` en ningún `package.json`, ni `volta`.
+**Node 22 (LTS).** `DECIDIDO — pendiente de implementar`. Hoy el runtime
+no está pineado: no hay `.nvmrc`, ni campo `engines` en ningún
+`package.json`, ni `volta`.
 
-<!-- TODO: pinear la versión de Node. Sin esto, `better-sqlite3` (que
-compila binarios nativos) puede fallar o requerir rebuild al cambiar de
-máquina o de versión. Es la dependencia más sensible del repo. -->
+Mecanismo acordado, los dos:
+
+- **`.nvmrc` al root** con `22` — para que nvm/fnm cambien de versión
+  solos al entrar al repo.
+- **`engines: { "node": ">=22 <23" }`** en ambos `package.json` — para
+  que npm avise si la versión activa no coincide.
+
+Versión de referencia: la máquina de desarrollo actual corre Node
+v22.23.1 con npm 10.9.8.
+
+Motivo: `better-sqlite3` compila binarios nativos contra la ABI de Node.
+Cambiar de major sin rebuild lo rompe con un error de módulo inválido,
+y es la dependencia más sensible del repo.
 
 Rangos declarados hoy — todas las dependencias usan `^` (minor abierto)
 salvo el TypeScript del frontend, que usa `~` (sólo patch):
