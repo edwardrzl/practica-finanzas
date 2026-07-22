@@ -1,0 +1,17 @@
+{
+  "//": "Ejemplo de MCP servers para Claude Code (lo lee desde .mcp.json en la raíz).",
+  "//setup": "Copiá este archivo a .mcp.json y seguí guides/MCP-azure-devops-windows.md.",
+  "//secrets": "NO contiene secretos: el PAT va en la env var PERSONAL_ACCESS_TOKEN (setx); el proxy es un hostname interno. .mcp.json es seguro de commitear.",
+  "mcpServers": {
+    "azure-devops": {
+      "command": "npx",
+      "args": ["-y", "@azure-devops/mcp", "sycdevops", "-a", "pat"],
+      "env": {
+        "NODE_USE_ENV_PROXY": "1",
+        "HTTP_PROXY": "http://wsaprd.syc.loc:3128",
+        "HTTPS_PROXY": "http://wsaprd.syc.loc:3128",
+        "NO_PROXY": "*.syc.com.co,*.sycpruebas.com,localhost,127.0.0.1,::1"
+      }
+    }
+  }
+}

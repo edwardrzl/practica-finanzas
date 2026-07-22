@@ -1,0 +1,107 @@
+# repo-config.yaml — practica-finanzas
+#
+# Configuración operacional del repo. **Fuente de verdad** para tipo
+# de repo, tracker de work items, ambientes desplegables y flujo de
+# promoción. Referenciado por AGENTS.md, los slash commands de
+# .claude/commands/ y los skills.
+#
+# Generado por /adopt (AI-DLC v0.23, modo brownfield) el 2026-07-22.
+# Decisiones y evidencia: archive/ai-dlc-adoption-plan.md
+# Ver §6 *Configuración del repo* de la metodología AI-DLC.
+
+# ─── Tipo de repo ────────────────────────────────────────────────────
+# service        : servicio backend desplegable a infra (default SYC)
+# library        : paquete npm/pip/maven (sin "ambientes"; prerelease/release)
+# frontend-app   : app web/SPA con previews por PR
+# infra          : terraform / helm / pulumi (sandbox + prod típicamente)
+# custom         : declarar environments y deploy_trigger manualmente
+#
+# `custom` porque los dos sub-proyectos son heterogéneos (service +
+# frontend-app) y el repo no se despliega a ninguna infra. Elegir
+# `service` habría heredado 3 ambientes y runtime openshift inexistentes.
+repo_type: custom
+
+# ─── Trackers de work items ──────────────────────────────────────────
+# Sin tracker: no hay Azure DevOps ni GitHub Issues en uso. Los 14
+# commits del historial no referencian work items. La unidad de
+# trazabilidad es la carpeta `specs/<slug>/`, y los commits NO llevan
+# prefijo `AB#<id>`.
+#
+# Para agregar uno más adelante: descomentar y configurar; no requiere
+# re-adoptar. Ver los ejemplos en la metodología §6.
+trackers: []
+
+# ─── Ambientes y flujo de promoción ──────────────────────────────────
+# Sólo existe la rama `main`. NO se declaran `pruebas`/`qa` porque no
+# existen — declarar ambientes ficticios es anti-patrón (ADOPT.md).
+# Estos `name` alimentan los estados `partial-deploy-<env>` y
+# `deployed:<env>` del lifecycle.
+environments:
+  - name: main
+    branch: main
+    deploy_trigger: manual
+    # OPEN_QUESTION: sin CI ni tests no hay criterio automatizable.
+    # Resolver junto con la decisión de framework de test.
+    gate: "TODO — no hay CI ni tests todavía"
+
+promotion_path: [main]
+
+# ─── Monorepo ────────────────────────────────────────────────────────
+# Sub-proyectos heterogéneos: un service y una frontend-app. Por eso
+# se declara este bloque además del `repo_type: custom` de arriba.
+monorepo:
+  layout: backend-and-frontend
+  services:
+    - { path: backend,  type: service }
+    - { path: frontend, type: frontend-app }
+
+  # ⚠️ ACTIVADO POR LAYERING, NO POR PARITY.
+  #
+  # El default de este flag (metodología §10) asume feature parity:
+  # sub-proyectos que implementan el MISMO contrato y deben espejarse
+  # (ej. backend .NET + backend Node). Este repo NO es ese caso —
+  # `backend/` expone la API y `frontend/` la consume: son capas
+  # complementarias de un mismo slice vertical.
+  #
+  # Se activa igual porque la evidencia lo exige: 10 de 14 commits
+  # tocan ambos sub-proyectos. Una feature ("agregar movimiento") va
+  # de la tabla SQLite al formulario React y es UNA sola spec.
+  #
+  # Reglas de parity que NO aplican acá:
+  #   - matriz de tests: un R*.* NO se valida en ambos sub-proyectos
+  #   - drift-de-parity: un bug en una capa no bloquea la otra
+  #   - cobertura por default: un R*.* NO lo cubren "todos"
+  #
+  # En su lugar, cada requirement declara su capa explícitamente:
+  #   R2.1 [only: backend]   — endpoint POST /api/movimientos
+  #   R2.2 [only: frontend]  — formulario de alta
+  #   R2.3                   — sin marca: contrato compartido
+  # Y las tasks van etiquetadas: T1 [backend], T2 [frontend].
+  cross_cutting_specs: true
+
+# ─── Convención de ramas ─────────────────────────────────────────────
+# El repo no tiene historial de feature branches (14 commits directos a
+# main), así que no hay convención previa que respetar. Se adopta el
+# default de la metodología.
+#
+# Nota: AI-DLC es PR-only por diseño. A partir de la adopción, no se
+# commitea directo a `main`.
+branch_pattern: "feat/"
+
+# ─── Servicio de diseño (opcional) ───────────────────────────────────
+# Sin dependencia de Figma: cero referencias en el repo, estilado CSS
+# escrito a mano. Los slash commands `/figma-*` no aplican.
+# design_service:
+#   figma_team_url: https://www.figma.com/files/team/...
+
+# ─── Runtime / target de deploy ──────────────────────────────────────
+# `none`: hoy corre sólo en local (ts-node-dev + vite dev), con SQLite
+# embebido y sin infra externa. No es una decisión pendiente, es el
+# estado real. Cambiar el día que se decida desplegarlo.
+runtime:
+  type: none
+
+# ─── Servidores MCP ──────────────────────────────────────────────────
+# Ninguno configurado. `.mcp.json.example` queda como referencia; el
+# `.mcp.json` real no se creó.
+mcps: []

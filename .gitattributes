@@ -1,0 +1,53 @@
+# .gitattributes — practica-finanzas
+#
+# SCOPEADO A RUTAS AI-DLC, deliberadamente.
+#
+# El template de AI-DLC trae `* text=auto eol=lf` global. Acá NO se usa:
+# este repo tiene core.autocrlf=true y 53 de sus 61 archivos de código
+# están en CRLF en el working tree. Aplicar eol=lf global los
+# renormalizaría a todos, metiendo un diff de fin de línea sobre todo
+# backend/ y frontend/ que no tiene nada que ver con la adopción.
+#
+# Por qué igual hace falta para las rutas AI-DLC: `.ai-dlc-version`
+# guarda un sha256 por archivo para detectar modificaciones del usuario
+# en un `--upgrade`. Con autocrlf, el hash del working tree difiere del
+# blob y la detección da falsos positivos. Fijando eol=lf en estas rutas,
+# sha256(working-tree) == sha256(blob) y el hashing queda estable.
+#
+# Consecuencia deliberada: backend/ y frontend/ quedan fuera. Sus fines
+# de línea los sigue manejando core.autocrlf, como hasta ahora.
+
+# ─── Artefactos AI-DLC: LF forzado para hashing estable ───
+AGENTS.md           text eol=lf
+CLAUDE.md           text eol=lf
+ADOPT.md            text eol=lf
+BOOTSTRAP.md        text eol=lf
+BROWNFIELD-CHECKLIST.md text eol=lf
+repo-config.yaml    text eol=lf
+.ai-dlc-version     text eol=lf
+
+.agents/**          text eol=lf
+.claude/**          text eol=lf
+stack/**            text eol=lf
+specs/**            text eol=lf
+guides/**           text eol=lf
+.org/**             text eol=lf
+archive/**          text eol=lf
+
+scripts/*.sh        text eol=lf
+# .ps1 en CRLF: es lo que espera PowerShell en Windows, y coincide con
+# el criterio del template. Lo que importa es que sea estable, no que
+# sea LF.
+scripts/*.ps1       text eol=crlf
+
+# ─── Binarios: nunca tocar ───
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.svg   text eol=lf
+*.db    binary
+*.db-shm binary
+*.db-wal binary

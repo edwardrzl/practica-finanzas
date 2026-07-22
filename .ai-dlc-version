@@ -1,0 +1,218 @@
+# Manifiesto de instalacion AI-DLC. Lo lee `/adopt --upgrade` y
+# `ai-dlc-upgrade` para saber que puede tocar y que no.
+# NO editar a mano salvo que sepas lo que estas haciendo.
+#
+# Generado por /adopt (agente) replicando el algoritmo de
+# ai-dlc-init.sh:264-338 (normalizacion LF, role_of, hash del
+# bloque entre sentinels) para que los hashes sean compatibles.
+
+methodology_version: "0.23"
+template_version: "v0.21-8-g141dc98"
+applied_at: 2026-07-22T18:45:45Z
+applied_by: edrlxyz@gmail.com
+mode: brownfield
+installer: adopt
+
+# Reusados por ai-dlc-upgrade para re-sustituir en archivos nuevos.
+placeholders:
+  SERVICE_NAME: practica-finanzas
+  OWNER_TEAM: EdwardR
+  LEAD_EMAIL: edrlxyz@gmail.com
+
+plan_path: archive/ai-dlc-adoption-plan.md
+
+decisions_summary:
+  repo_type: custom
+  trackers: []
+  environments: [main]
+  promotion_path: [main]
+  runtime: none
+  branch_pattern: "feat/"
+  design_service: null
+  monorepo_cross_cutting_specs: true   # por layering, NO por parity
+  base_branch: main
+
+open_questions:
+  - "ALTA: cero tests en el repo -> gates G2/G4 manuales hasta resolver"
+  - "MEDIA: gate del ambiente main sin definir (sin CI)"
+  - "MEDIA: schema SQLite sin mecanismo de migracion"
+  - "BAJA: branch policies de GitHub no detectables (gh CLI ausente)"
+  - "BAJA: puerto/baseURL/cors hardcodeados -> candidatos a refactor-only"
+
+# Desviaciones deliberadas respecto del payload del template:
+#   .gitattributes -> generado SCOPEADO a rutas AI-DLC (el del
+#     template trae `* text=auto eol=lf` global, que habria
+#     renormalizado 53 archivos de backend/ y frontend/).
+#   .gitignore -> merge con las 4 lineas originales del repo.
+#   .claude/commands/* -> wrappers de texto, no symlinks
+#     (core.symlinks=false, Windows sin Developer Mode).
+files:
+  .agents/commands/ado-link.md:
+    role: owned
+    sha256_at_install: 15d49b92c8340ecd8b15532aa92a8d13eb057d842e4f7c2878627dd88d63f57b
+  .agents/commands/adopt.md:
+    role: owned
+    sha256_at_install: 0063b6339f08735ca4384d07b59e5773296da869db6e2097e2786e9e7f9e6864
+  .agents/commands/ado-status.md:
+    role: owned
+    sha256_at_install: 9be88f5c7ed87355d0aedac3c475f6688c98ca26e051904c44b9dbe5fae9e171
+  .agents/commands/bug-triage.md:
+    role: owned
+    sha256_at_install: d65ce4fcf6b109141994214fc22e94575a293a2d68537c51b3ad6e67126be782
+  .agents/commands/spec-amend.md:
+    role: owned
+    sha256_at_install: a52b69b9c4bd65fa29c7a566237cc7121be710c287767ba1a51993f9e792ec2e
+  .agents/commands/spec-clarify.md:
+    role: owned
+    sha256_at_install: c9c017c02d0a46ec3061d56098eaaaf2a485cbcaafe05df76dd95422c9cf8271
+  .agents/commands/spec-handoff.md:
+    role: owned
+    sha256_at_install: cd98f1c08c7f3f6777d1d53bde72accd71f68c9094c8884db7283e053b591ac0
+  .agents/commands/spec-implement.md:
+    role: owned
+    sha256_at_install: 46ffb2811dd57aec0c47fc2cfd2eddd2e68a9b7735f67742d3c14451491d4bdc
+  .agents/commands/spec-new.md:
+    role: owned
+    sha256_at_install: 5a57b3f94a66b76fe63ccc6c61e463756ce916dc916dd6ce610131d5f12a3db0
+  .agents/commands/spec-promote.md:
+    role: owned
+    sha256_at_install: ea93f82de9452307b9e3ece7564277996ebc000baa58d8d93015f1bced6a0f0f
+  .agents/commands/spec-status.md:
+    role: owned
+    sha256_at_install: 66b7ffc26eea2bcda9cb4cc44ea8f0e67400793ca41e52bb3a588775a76ce94f
+  .agents/commands/spec-verify.md:
+    role: owned
+    sha256_at_install: b38b583da42e23075c74638f89c59ea932a2b0da3138bef26dc47ddc4d0de6df
+  .agents/skills/README.md:
+    role: owned
+    sha256_at_install: 5067eebc7f098d395db3af878816fe22f32919ce5dd4399add669534aac8dae9
+  .agents/templates/README.md:
+    role: owned
+    sha256_at_install: 94ddf02fe796f3af24b0f2c1ecccbcf4e495b388a670656c98daac2c36939640
+  .agents/templates/spec/checklist-requirements.md:
+    role: owned
+    sha256_at_install: 4320ee6c03989aded82bee769df8e559bb63780129f004c90ad22742184b76bf
+  .agents/templates/spec/design.md:
+    role: owned
+    sha256_at_install: 8f90ae707babf65dc45931e6c14e2612c31befd243070931d3357db602556326
+  .agents/templates/spec/requirements.md:
+    role: owned
+    sha256_at_install: 623772311d7121e97833d5aa6d1b982e4c9bd4ffe52c42fefbacb6cea3ea60e2
+  .agents/templates/spec/status.md:
+    role: owned
+    sha256_at_install: 3b9638b6f658438813cc4c6b9976d2d71e5c9472c92ef2cc524c46ed8c71876c
+  .agents/templates/spec/tasks.md:
+    role: owned
+    sha256_at_install: d6b567a17514593bc7a2c9db77e70f0a5481f42d88c46ab0acbbbb52b887d0f5
+  .gitattributes:
+    role: template
+    sha256_at_install: b319f8707b7989137a696ee610b7dda830b20514fdec7d85ac967a87cdeb7ab0
+  .gitignore:
+    role: template
+    sha256_at_install: 9243bef45c1fe77ad0675aa30aa60940394c026eb0ade1baead948fc0cbc4e72
+  .mcp.json.example:
+    role: owned
+    sha256_at_install: 8a8ca4dc6a14c248214dcd323a17def98639bdff896ffd5e7f481c8d9cf2192c
+  .org/README.md:
+    role: owned
+    sha256_at_install: e57d8d3c497dd9879e952afe446c23309ecd92dac0f494b1af20cfe76ef24a91
+  ADOPT.md:
+    role: owned
+    sha256_at_install: 0d1b8472f46c40ebc1d413ba7c17f8f9640710fbf24082caae9c08b73c45718e
+  AGENTS.md:
+    role: bracketed
+    sentinel_version: "0.23"
+    sha256_at_install: 6a284580633b423a06214f2b0a31eebb5a291e9ee502ebea2fcbe0294273a00b
+  BOOTSTRAP.md:
+    role: owned
+    sha256_at_install: 79c1be1f8ff40423c1aa1c7debf7eebccc933e452d5a26d014edbf9a64e1c8af
+  BROWNFIELD-CHECKLIST.md:
+    role: owned
+    sha256_at_install: 3a4b23d4c10c7f8c91dba9fe7c72324c5cfa7c5eb23415b6d71e6efeda9279bc
+  CLAUDE.md:
+    role: owned
+    sha256_at_install: 52eb2414d12b88e1310147faa6b1496225bfad88d2a189fd5a4f3878a835561b
+  guides/MCP-azure-devops-windows.md:
+    role: owned
+    sha256_at_install: d316ca9e337d1541f56a99445819607226517f087eb6166d755c6c40f6876b0a
+  guides/SHAPE-data-pipeline.md:
+    role: owned
+    sha256_at_install: fcb8f5358cfee358ed408e788659bcaa3bfd1431f77757d55f50609a8e3d91a4
+  guides/SHAPE-llm-agent.md:
+    role: owned
+    sha256_at_install: 2d8331c9f279c00e8d9fea86dc039f9cae306f25e05816743b052e8c59434934
+  guides/SHAPE-shared-service.md:
+    role: owned
+    sha256_at_install: 58cb7b6405a56ae8d276470f105c0ea002d8ad71a51f6a35641fe28872226a15
+  repo-config.yaml:
+    role: template
+    sha256_at_install: 18841a6907235e9d646322abb5bd22029affea10a4692bdbbe1882e913baaf02
+  scripts/restore-symlinks.sh:
+    role: owned
+    sha256_at_install: 6bbb074484ae6f8f74d9001a344881510c5db4dec8e0b86af3405330ba2a4ff7
+  scripts/spec-lint.ps1:
+    role: owned
+    sha256_at_install: 14fe07b587de4bfb871692b641bf1bc08ad466d20ebb47206564e9b740a5539d
+  scripts/spec-lint.sh:
+    role: owned
+    sha256_at_install: 8303d2c3e902610d8de20d17ac25a01e357ff606777695b66425a9dc0be8ab40
+  specs/README.md:
+    role: owned
+    sha256_at_install: 84bf43cdc8b59a0429bdfd4f48ea72e7fd52f5010c961b02cfac905bbbe6804e
+  stack/architecture.md:
+    role: template
+    sha256_at_install: 07ce48e4c3c0176da28f6906de313142c9d68fdaa0fc0fd8d0b8e38b1c478c45
+  stack/constraints.md:
+    role: template
+    sha256_at_install: d031181002d0a18176dcabe0475e9bd21c7b463048b6188920e7655aad27d3ea
+  stack/patterns.md:
+    role: template
+    sha256_at_install: 8a43f6ef8a9420c25208c72be3f8e74f3e75c97fdf5c54aae16d74b0701d0c0a
+  stack/README.md:
+    role: template
+    sha256_at_install: 2b7f1a3d1dfb39295481b5a689fa0aa95862eb50e3d8cdf19f0660efe4ab84de
+  stack/security.md:
+    role: template
+    sha256_at_install: 289e8c0eb98f14704b1d3c59a43a63bab475e0bab93655d85aeb45f478982922
+  stack/tech-stack.md:
+    role: template
+    sha256_at_install: 1a2857ecbed1691cfb1d4a8a0d0f3e3a6265884d7be566d185e8f4c56cad65fe
+  stack/testing.md:
+    role: template
+    sha256_at_install: b7321cb1fc8afb8631661a5284f4d6cfd17283ee6ec12a163e13142eccda9a4b
+  .claude/commands/ado-link.md:
+    role: owned
+    sha256_at_install: 7f8978824a6be52d2879f1820f986c8cf11ecb82b5585dfd9e69d7c0094b9971
+  .claude/commands/adopt.md:
+    role: owned
+    sha256_at_install: 30c1cb085a89146f50be50658d979f616b0da9e4598994671cc0fca9e61e46b3
+  .claude/commands/ado-status.md:
+    role: owned
+    sha256_at_install: 85859914c7778293924ba8f55c231c2d230842645a5888baa25bb917bf6735d8
+  .claude/commands/bug-triage.md:
+    role: owned
+    sha256_at_install: 37a1192988636a8e5820d9c15ee7ae75fdcab3817fa6bf25f0a768816fa189b6
+  .claude/commands/spec-amend.md:
+    role: owned
+    sha256_at_install: 98701c48202e7d5811361a0bb1b2d2c6dedbcf9d8b9a4aa67824028c7cbd96b7
+  .claude/commands/spec-clarify.md:
+    role: owned
+    sha256_at_install: 116b3caea82cf62154b43ef523641914cd62677bfd408e53cdacee544346aff8
+  .claude/commands/spec-handoff.md:
+    role: owned
+    sha256_at_install: 4254f944c284b4e94604cf9b57d7e1ff1b58645b90089a6fb99990341523810f
+  .claude/commands/spec-implement.md:
+    role: owned
+    sha256_at_install: bd78f6a0a5e806439b4847437a8f309ad5b75fd8df288310e564f95249edb5a0
+  .claude/commands/spec-new.md:
+    role: owned
+    sha256_at_install: 349b79425ffa51890d0269b64e0b670340b1f48f2a928c100e9df9a4870ae733
+  .claude/commands/spec-promote.md:
+    role: owned
+    sha256_at_install: 2536098d062e0e8471dc9bd103ef7d6e5482fa921fe6cdfe9bbd28c6e7268e88
+  .claude/commands/spec-status.md:
+    role: owned
+    sha256_at_install: 38254cc723e583ccbb2b8abfe7f0d20e472bedc5b10adf72cd98a15fc4bbb1ba
+  .claude/commands/spec-verify.md:
+    role: owned
+    sha256_at_install: 69348fab000242dc316aab0b94d20ebe6a39868b5155fd69c2d6ce4b43f97898
