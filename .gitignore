@@ -2,3 +2,46 @@ node_modules/
 dist/
 .env
 .env.local
+# ─────────────────────────────────────────────────────────────
+# Agregado por /adopt (AI-DLC v0.23) — 2026-07-22
+# Las 4 lineas de arriba son las originales del repo, intactas.
+# ─────────────────────────────────────────────────────────────
+
+# SQLite local. El schema canonico vive en
+# backend/src/data/database.ts (CREATE TABLE IF NOT EXISTS), no en el
+# archivo .db. Con journal_mode=WAL el -wal cambia con solo levantar el
+# server, y la base se resetea seguido mientras el schema se consolida.
+*.db
+*.db-shm
+*.db-wal
+
+# Config local del agente (per-maquina, no se comparte)
+.claude/settings.local.json
+
+# MCP real (el .example si se versiona)
+.mcp.json
+
+# Transcripts / capturas de conversacion (locales, no commitear)
+# IMPORTANTE: pueden contener secretos pegados durante la sesion
+# (tokens, JWT, .env). NUNCA commitear.
+[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-[0-9]*.txt
+*-command-message*.txt
+*-caveatcaveat-*.txt
+session-*.md
+*.session.md
+.opencode/sessions/
+.codex/sessions/
+
+# Cobertura y reportes de test (cuando existan)
+coverage/
+test-results/
+playwright-report/
+playwright/.cache/
+
+# OS / editores
+.DS_Store
+Thumbs.db
+.idea/
+
+# Logs
+*.log
